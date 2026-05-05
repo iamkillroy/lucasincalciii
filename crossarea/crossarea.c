@@ -1,50 +1,104 @@
+///////////////////////////////
+//      '       KU MATH 127
+//     (@)>     BY LUCAS
+//   //KU       FRIAS FOR
+//     ""       DAVID AND LILY
+/////////////////////////////////
+// "ANIMVM DEBES MUTARE NON CAELVM" //
 #include <stdio.h>
+#include <math.h>
+//some useful structs
 
+//basic components of a 3d Vec3tor
 struct vector_struct {
     int x;
     int y;
     int z;
 };
+//2x2 matrix
 struct matrix2{
     int a;
     int b;
     int c;
     int d;
 };
+//3x3 (i just used a-h because i found a formula
+// online that has the determinant like that
 struct matrix3{
-    int a1;
-    int a2;
-    int a3;
-    int b1;
-    int b2;
-    int b3;
-    int c1;
-    int c2;
-    int c3;
+    int a;
+    int b;
+    int c;
+    int d;
+    int e;
+    int f;
+    int g;
+    int h;
+    int i;
 };
+//scalar, just so i have pretty types :)
 struct scalar {
     int magnitude;
 };
-typedef struct vector_struct Vec;
+//typedef all those suckas into existance
+typedef struct vector_struct Vec3;
 typedef struct matrix2 Matrix2x2;
-typedef struct matrix2 Matrix3x3;
+typedef struct matrix3 Matrix3x3;
 typedef struct scalar Scalar;
 
-Vec get_vector(Vec a, Vec b){
-    Vec resultVec;
-    resultVec.x = a.x - b.x;
-    resultVec.y = a.y - b.y;
-    resultVec.z = a.z - b.z;
-    return resultVec;
+Vec3 get_Vec3tor(Vec3 a, Vec3 b){
+    //get_Vec3tor: returns a Vec3
+    //and combines two Vec3s giving
+    //their component in order of
+    // ---->  with get_Vec3tor(A, B)
+    //  AB
+    Vec3 resultVec3;
+    //crazy easy addition
+    resultVec3.x = a.x - b.x;
+    resultVec3.y = a.y - b.y;
+    resultVec3.z = a.z - b.z;
+    return resultVec3;
 }
 Scalar get_2_by_2_det(Matrix2x2 matrix2){
+    //get_2_by_2_det: gets the determinant
+    //of a 2x2 matrix, given a matrix2
+    //returns as a scalar result
     Scalar result;
+    //the formula: given
+    // | A B | ---->  = AD - BC
+    // | C D |  det
     result.magnitude =  matrix2.a * matrix2.d - matrix2.c * matrix2.d;
     return result;
 }
 
-Scalar get_3_by_3_det(Matrix3x3 matrix3) {
+Scalar get_3_by_3_det(Matrix3x3 m) {
+    //get_3_by_3_det: returns a 3x3 determinant
+    // by breaking the result into 2x2 matrixes
+    // and getting their determinants
     Scalar result;
+    //lucas!!! why didn't you use the matrix
+    // 2x2 function for each 2x2 determinant?
+    // well, because i would have to cast
+    // each 3x3 matrix value INTO a new 2x2
+    // matrix. and that would take more time/stack
+    // space. this formula is cheap and easy and works
+    // sorry it's not pretty charlie
+    result.magnitude =
+        m.a * (m.e * m.i - m.f * m.h)
+        - m.b * (m.d * m.i - m.f * m.g)
+        + m.c * (m.d*m.h - m.e * m.g);
+    return result;
+}
+
+Scalar get_magnitude(Vec3 vec) {
+    //get_magnitude: given a Vec3,
+    // this function returns the magnitude
+    // in a scalar quantity
+    Scalar result;
+    // ||VEC|| = sqrt(VEC.X^2 + VEC.Y^2 + VEC.Z^2)
+    // this is that
+    result.magnitude = sqrt(pow(vec.x, 2) + pow(vec.y, 2) + pow(vec.z, 2));
+    return result;
+
 }
 
 int get_cross_product(){
