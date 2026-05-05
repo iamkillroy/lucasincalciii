@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <stdbool.h>
 //some useful structs
 
 //basic components of a 3d Vec3tor
@@ -182,12 +183,44 @@ Plane make_plane_from_three_points(Vec3 a, Vec3 b, Vec3 c){
     return resultPlane;
 
 }
-
+bool check_if_vec3_exists_on_plane(Plane plane, Vec3 vec){
+    //check_if_point_exists_on_plane: returns
+    // true or false if a vec3 exists at that
+    // point it's defined at on the plane NOT
+    // if they intersect
+    int A = plane.n.x;
+    int B = plane.n.y;
+    int C = plane.n.z;
+    //the formula (simple ) is
+    // A(x-x0) + B (y-y0) + C(z-z0) = 0
+    // where A,B,C are xyz on the normal vec3
+    // and x0,y0,z0 is a point on the plane
+    int X0 = plane.r0.x;
+    int Y0 = plane.r0.y;
+    int Z0 = plane.r0.z;
+    //now we have to check and return the value
+    int result = A * (vec.x - X0)
+        + B * (vec.y - Y0)
+        + C * (vec.z - Z0);
+    //now we check the result. if it's
+    // zero than it's on the plane
+    // otherwise returns false
+    printf("%d", result);
+    if (result == 0) return true;
+    else return false;
+}
 
 
 int main(){
-    Vec3 a = {2, 2, 6};
-    Vec3 b = {4, 5, 4};
-    Vec3 c = {2,6,10};
-    printf("%f", calculate_vector_triangle(a, b, c).magnitude);
+    Vec3 a = {0, 0, 0};
+    Vec3 b = {1, 0, 0};
+    Vec3 c = {0,1,0};
+    Vec3 testVector = {0,0,1};
+    Plane p = make_plane_from_three_points(a, b, c);
+    if (check_if_vec3_exists_on_plane(p, testVector)){
+        printf("it works");
+    }
+    else {
+        printf("off the plane");
+    }
 }
