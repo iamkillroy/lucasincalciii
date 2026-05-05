@@ -56,6 +56,21 @@ struct plane{
 };
 typedef struct plane Plane;
 
+
+typedef struct physic_basic_object {
+    float mass;
+    Vec3 position;
+    Vec3 velocity;
+    Vec3 acceleration;
+    Vec3 forces[];
+} PDot;
+
+typedef struct physic_force_vector {
+    float newtons;
+    Vec3 position;
+} PVector;
+
+
 Vec3 get_vector_displacement(Vec3 a, Vec3 b){
 
     //get_Vec3tor: returns a Vec3
@@ -78,7 +93,7 @@ Scalar get_2_by_2_det(Matrix2x2 matrix2){
     //the formula: given
     // | A B | ---->  = AD - BC
     // | C D |  det
-    result.magnitude =  matrix2.a * matrix2.d - matrix2.c * matrix2.d;
+    result.magnitude =  matrix2.a * matrix2.d - matrix2.c * matrix2.b;
     return result;
 }
 
@@ -133,7 +148,7 @@ Vec3 get_cross_product(Vec3 a, Vec3 b){
     //this just calculates each terms
     // x, y, z etc
     result.x = (m.e * m.i - m.f * m.h);
-    result.y = (m.d * m.i - m.f * m.g);
+    result.y = -1 * (m.d * m.i - m.f * m.g);
     result.z = (m.d*m.h - m.e * m.g);
     return result;
 }
@@ -163,6 +178,33 @@ Scalar calculate_vector_triangle(Vec3 a, Vec3 b, Vec3 c){
     // all good
     return areaResult;
 }
+
+Scalar calculate_vector_parallelogram(Vec3 a, Vec3 b, Vec3 c){
+    //calculate_vector_parallelogram: given a, b, c, calculate
+    // the area of a PARALLELOGRAM not triangle in 3d space and return
+    // it as a scalar value (same as triangle but without the 1/2)
+    //STEP 1: get the ->AB and -> AC of our parallelogram
+    //
+    //          C----------D
+    //        /           /
+    //       /           /
+    //      A----------B
+    //so then we get the cross product OF those two vectors
+    // as a vector that we can preform magnitude operations on
+    Vec3 AB = get_vector_displacement(a, b);
+    Vec3 AC = get_vector_displacement(a, c);
+    //STEP 2, get the cross product of them
+    Vec3 ABcrossAC = get_cross_product(AB, AC);
+    //STEP 3, get the magnitude of the resulting cross product vector
+    Scalar areaResult;
+    //ugly fugly freaking ugly code
+    // casting into scalars was a greaaatttt ideaaa
+    areaResult.magnitude = (get_magnitude(ABcrossAC).magnitude);
+    //this is the cx area of a rectangle
+    // all good
+    return areaResult;
+}
+
 
 //make a plane from two pints
 Plane make_plane_from_three_points(Vec3 a, Vec3 b, Vec3 c){
@@ -199,6 +241,7 @@ bool check_if_vec3_exists_on_plane(Plane plane, Vec3 vec){
     int Y0 = plane.r0.y;
     int Z0 = plane.r0.z;
     //now we have to check and return the value
+    // i know this isn't the dot product function but it's finna be okay
     int result = A * (vec.x - X0)
         + B * (vec.y - Y0)
         + C * (vec.z - Z0);
@@ -208,6 +251,15 @@ bool check_if_vec3_exists_on_plane(Plane plane, Vec3 vec){
     printf("%d", result);
     if (result == 0) return true;
     else return false;
+}
+
+Scalar get_dot_product(Vec3 a, Vec3 b){
+    // get_dot_product: given two vectors, a and b
+    // returns the dot product of the vectors as a scalar
+    Scalar result;
+    //thanks kaden!!!!
+    result.magnitude = a.x * b.x + a.y * b.y * a.z * b.z;
+    return result;
 }
 
 
