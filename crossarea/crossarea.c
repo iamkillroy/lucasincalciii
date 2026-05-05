@@ -100,15 +100,32 @@ Scalar get_magnitude(Vec3 vec) {
     return result;
 
 }
+Vec3 get_cross_product(Vec3 a, Vec3 b){
+    //get cross product: with two vectors
+    // a and b, this function returns the
+    // cross product of A and B as a vector
 
-int get_cross_product(){
+    //okay now hate me here
+    // my previous function for the cross product
+    // works, but it's scalar,
+    // so we just make a result Vec3
+    Vec3 result;
+    //and then cast the matrix values from a, b
+    Matrix3x3 m;
+    m.d = a.x;
+    m.e = a.y;
+    m.f = a.z; //lordy lord
+    m.g = b.x; //forgive me
+    m.h = b.y;
+    m.i = b.z;
+
+    result.x = (m.e * m.i - m.f * m.h);
+    result.y = (m.d * m.i - m.f * m.g);
+    result.z = (m.d*m.h - m.e * m.g);
 
 }
 
 
-int get_magnitude(){
-
-}
 
 int get_cross_area(){
 
