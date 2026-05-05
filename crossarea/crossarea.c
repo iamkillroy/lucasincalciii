@@ -144,7 +144,10 @@ Scalar calculate_vector_triangle(Vec3 a, Vec3 b, Vec3 c){
     //STEP 2, get the cross product of them
     Vec3 ABcrossAC = get_cross_product(AB, AC);
     //STEP 3, get the magnitude of the resulting cross product vector
-    Scalar areaResult = 0.5 * get_magnitude(ABcrossAC);
+    Scalar areaResult;
+    //ugly fugly freaking ugly code
+    // casting into scalars was a greaaatttt ideaaa
+    areaResult.magnitude = 0.5 * (get_magnitude(ABcrossAC).magnitude);
     //this is the cx area of a rectangle but times 0.5 makes it
     // all good
     return areaResult;
@@ -152,6 +155,8 @@ Scalar calculate_vector_triangle(Vec3 a, Vec3 b, Vec3 c){
 
 
 int main(){
-    //okay here's
-
+    Vec3 a = {2, 2, 6};
+    Vec3 b = {4, 5, 4};
+    Vec3 c = {2,6,10};
+    printf("%f", calculate_vector_triangle(a, b, c).magnitude);
 }
