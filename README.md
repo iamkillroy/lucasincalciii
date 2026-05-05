@@ -37,4 +37,4 @@ I want to recreate Calc III so that I can visualize and work on it over the summ
 3D space. This **can** be used by you, too, but there's wayy better and smarter people who have made cooler things
 
 ## Approach
-Using MONO C files for 100% 0 dependencies (except for c std but we all gotta lose sometimes) render vector math and calculations blazingally fast. All Calc III functions and object are made by yours truly, in Calc
+Using MONO C files for 100% 0 dependencies (except for c std but we all gotta lose sometimes) render vector math and calculations blazingally fast. All Calc III functions and object are made by yours truly, in a well (angrily?) commented response

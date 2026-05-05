@@ -14,29 +14,29 @@
 
 //basic components of a 3d Vec3tor
 struct vector_struct {
-    int x;
-    int y;
-    int z;
+    float x;
+    float y;
+    float z;
 };
 //2x2 matrix
 struct matrix2{
-    int a;
-    int b;
-    int c;
-    int d;
+    float a;
+    float b;
+    float c;
+    float d;
 };
 //3x3 (i just used a-h because i found a formula
 // online that has the determinant like that
 struct matrix3{
-    int a;
-    int b;
-    int c;
-    int d;
-    int e;
-    int f;
-    int g;
-    int h;
-    int i;
+    float a;
+    float b;
+    float c;
+    float d;
+    float e;
+    float f;
+    float g;
+    float h;
+    float i;
 };
 //scalar, just so i have pretty types :)
 struct scalar {
@@ -260,4 +260,28 @@ Scalar get_dot_product(Vec3 a, Vec3 b){
     //thanks kaden!!!!
     result.magnitude = a.x * b.x + a.y * b.y * a.z * b.z;
     return result;
+}
+
+Scalar get_distance_change(float velocity, float acceleration){
+    //get_distance_change: given a velocity V and acceleration A,
+}
+
+PDot time_push(PDot pdot){
+    //time_push: given a pdot,
+    // pushes the pdot object through time by one second
+    // the resulting pdot accounts for the change in position,
+    // velocity, acceleration, etc
+    pdot.position.x =
+
+
+
+    return pdot;
+}
+
+
+int main(){
+    Vec3 a = {-5, 0,0};
+    Vec3 b = {0, 6, 0};
+    Vec3 c = {0,0,12};
+    printf("%f", calculate_vector_triangle(a, b, c).magnitude);
 }
