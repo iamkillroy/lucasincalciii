@@ -261,18 +261,3 @@ Scalar get_dot_product(Vec3 a, Vec3 b){
     result.magnitude = a.x * b.x + a.y * b.y * a.z * b.z;
     return result;
 }
-
-
-int main(){
-    Vec3 a = {0, 0, 0};
-    Vec3 b = {1, 0, 0};
-    Vec3 c = {0,1,0};
-    Vec3 testVector = {0,0,1};
-    Plane p = make_plane_from_three_points(a, b, c);
-    if (check_if_vec3_exists_on_plane(p, testVector)){
-        printf("it works");
-    }
-    else {
-        printf("off the plane");
-    }
-}
