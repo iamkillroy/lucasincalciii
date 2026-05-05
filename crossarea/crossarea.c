@@ -4,7 +4,8 @@
 //   //KU       FRIAS FOR
 //     ""       DAVID AND LILY
 /////////////////////////////////
-// "ANIMVM DEBES MUTARE NON CAELVM" //
+// "DOMO ARIGATO MR ROBOTO
+// MATA AU HU MADE...... //
 #include <stdio.h>
 #include <math.h>
 //some useful structs
