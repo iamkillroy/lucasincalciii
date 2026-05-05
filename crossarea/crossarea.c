@@ -37,7 +37,7 @@ struct matrix3{
 };
 //scalar, just so i have pretty types :)
 struct scalar {
-    int magnitude;
+    float magnitude;
 };
 //typedef all those suckas into existance
 typedef struct vector_struct Vec3;
@@ -45,7 +45,8 @@ typedef struct matrix2 Matrix2x2;
 typedef struct matrix3 Matrix3x3;
 typedef struct scalar Scalar;
 
-Vec3 get_Vec3tor(Vec3 a, Vec3 b){
+Vec3 get_vector_displacement(Vec3 a, Vec3 b){
+
     //get_Vec3tor: returns a Vec3
     //and combines two Vec3s giving
     //their component in order of
@@ -118,21 +119,39 @@ Vec3 get_cross_product(Vec3 a, Vec3 b){
     m.g = b.x; //forgive me
     m.h = b.y;
     m.i = b.z;
-
+    //this just calculates each terms
+    // x, y, z etc
     result.x = (m.e * m.i - m.f * m.h);
     result.y = (m.d * m.i - m.f * m.g);
     result.z = (m.d*m.h - m.e * m.g);
-
+    return result;
 }
 
-
-
-int get_cross_area(){
-
-    return 0;
+Scalar calculate_vector_triangle(Vec3 a, Vec3 b, Vec3 c){
+    //calculate_vector_triangle: given a, b, c, calculate
+    // the area of a triangle in 3d space and return
+    // it as a scalar value
+    //STEP 1: get the ->AB and -> AC of our triangle
+    //
+    //          C
+    //        /  \
+    //       /    \
+    //      A------B
+    //so then we get the cross product OF those two vectors
+    // as a vector that we can preform magnitude operations on
+    Vec3 AB = get_vector_displacement(a, b);
+    Vec3 AC = get_vector_displacement(a, c);
+    //STEP 2, get the cross product of them
+    Vec3 ABcrossAC = get_cross_product(AB, AC);
+    //STEP 3, get the magnitude of the resulting cross product vector
+    Scalar areaResult = 0.5 * get_magnitude(ABcrossAC);
+    //this is the cx area of a rectangle but times 0.5 makes it
+    // all good
+    return areaResult;
 }
 
 
 int main(){
+    //okay here's
 
 }
