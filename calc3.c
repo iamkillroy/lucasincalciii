@@ -6,6 +6,7 @@
 /////////////////////////////////
 // "DOMO ARIGATO MR ROBOTO
 // MATA AU HU MADE...... //
+#include <stdint.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -18,6 +19,14 @@ struct vector_struct {
     float y;
     float z;
 };
+typedef struct vector_start_and_end {
+    float xi;
+    float yi;
+    float zi;
+    float xf;
+    float yf;
+    float zf;
+} FullVector;
 //2x2 matrix
 struct matrix2{
     float a;
@@ -42,6 +51,7 @@ struct matrix3{
 struct scalar {
     float magnitude;
 };
+
 typedef struct vector_struct Vec3;
 typedef struct matrix2 Matrix2x2;
 typedef struct matrix3 Matrix3x3;
@@ -55,7 +65,11 @@ struct plane{
     Vec3 n;
 };
 typedef struct plane Plane;
-
+typedef struct scalar3d {
+    Scalar x;
+    Scalar y;
+    Scalar z;
+} Scalar3D;
 
 typedef struct physic_basic_object {
     float mass;
@@ -70,6 +84,19 @@ typedef struct physic_force_vector {
     Vec3 position;
 } PVector;
 
+typedef struct time {
+    uint64_t seconds;
+} Time;
+
+typedef struct algebraic_statement {
+    char * statement;
+} AlgebraStatement;
+
+typedef struct param_of_func {
+    AlgebraStatement XofT;
+    AlgebraStatement YofT;
+    AlgebraStatement ZofT;
+} Parametrization;
 
 Vec3 get_vector_displacement(Vec3 a, Vec3 b){
 
@@ -84,6 +111,30 @@ Vec3 get_vector_displacement(Vec3 a, Vec3 b){
     resultVec3.y = a.y - b.y;
     resultVec3.z = a.z - b.z;
     return resultVec3;
+}
+FullVector make_full_vector_from_two_vector_points(Vec3 a, Vec3 b){
+    //make_full_vector_from_two_vector_points: given Vec3 a and Vec3 b
+    //creates and returns a new FullVector that begins at a and ends at b
+    FullVector resultVector = {a.x, a.y, a.z, b.x, b.y, b.z};
+    return resultVector;
+}
+Vec3 get_start_from_full_vector(FullVector fv){
+    //get_start_from_full_vector: given a full vector
+    // fv, this returns the START of the vector from it's initial position
+    Vec3 startVector;
+    startVector.x = fv.xi;
+    startVector.y = fv.yi;
+    startVector.z = fv.zi;
+    return startVector;
+}
+Vec3 get_end_from_full_vector(FullVector fv){
+    //get_end_from_full_vector: given a full vector
+    // fv, this returns the END of the vector from it's initial position
+    Vec3 endVector;
+    endVector.x = fv.xf;
+    endVector.y = fv.yf;
+    endVector.z = fv.zf;
+    return endVector;
 }
 Scalar get_2_by_2_det(Matrix2x2 matrix2){
     //get_2_by_2_det: gets the determinant
@@ -262,26 +313,82 @@ Scalar get_dot_product(Vec3 a, Vec3 b){
     return result;
 }
 
-Scalar get_distance_change(float velocity, float acceleration){
-    //get_distance_change: given a velocity V and acceleration A,
+Scalar3D get_distance_change(Vec3 velocity, Vec3 acceleration, Time time){
+    //get_distance_change: given a velocity V and acceleration A
+    // using the formula:
+    // change in x/y/z = v*t + 1/2 at^2
+    //returns the displacement as a 3D vector displacement
+    Scalar3D result;
+    //just do that formula three times and return the resulting change
+    result.x.magnitude = velocity.x * time.seconds + 0.5f * acceleration.x * pow(time.seconds, 2);
+    result.y.magnitude = velocity.y * time.seconds + 0.5f * acceleration.x * pow(time.seconds, 2);
+    result.z.magnitude = velocity.z * time.seconds + 0.5f * acceleration.z * pow(time.seconds, 2);
+    return result;
 }
 
-PDot time_push(PDot pdot){
-    //time_push: given a pdot,
+Scalar3D get_velocity_change(Vec3 velocity, Vec3 acceleration, Time time){
+    //get_velocity_change: given a velocity V and acceleration A
+    // using the formula:
+    // new velocity (vf) = v0 + at
+    //returns the new velocity as a 3D vector displacement
+    Scalar3D result;
+    //just do that formula three times and return the resulting change
+    result.x.magnitude = velocity.x + acceleration.x * time.seconds;
+    result.y.magnitude =  velocity.y + acceleration.y * time.seconds;
+    result.z.magnitude =  velocity.z + acceleration.z * time.seconds;
+    return result;
+
+}
+
+Scalar3D get_acceleration_change(Vec3 velocity, Vec3 acceleration, Time time){
+    //get_velocity_change: given a velocity V and acceleration A
+    // using the formula:
+    // new velocity (vf) = v0 + at
+    //returns the new velocity as a 3D vector displacement
+    Scalar3D result;
+    //just do that formula three times and return the resulting change
+    result.x.magnitude = velocity.x + acceleration.x * time.seconds;
+    result.y.magnitude =  velocity.y + acceleration.y * time.seconds;
+    result.z.magnitude =  velocity.z + acceleration.z * time.seconds;
+    return result;
+
+}
+
+PDot time_push(PDot pdot, Time time){
+    //time_push: given a pdot (and time)
     // pushes the pdot object through time by one second
     // the resulting pdot accounts for the change in position,
     // velocity, acceleration, etc
-    pdot.position.x =
+    Scalar3D distanceChangeIn3D = get_distance_change(pdot.velocity, pdot.acceleration, time);
+    pdot.position.x += distanceChangeIn3D.x.magnitude;
+    pdot.position.y += distanceChangeIn3D.y.magnitude;
+    pdot.position.z += distanceChangeIn3D.z.magnitude;
 
+    Scalar3D velocityChangeIn3D = get_distance_change(pdot.velocity, pdot.acceleration, time);
+    pdot.velocity.x += velocityChangeIn3D.x.magnitude;
+    pdot.velocity.y += velocityChangeIn3D.y.magnitude;
+    pdot.velocity.z += velocityChangeIn3D.z.magnitude;
 
-
+    Scalar3D accelChangeIn3D = get_distance_change(pdot.velocity, pdot.acceleration, time);
+    pdot.acceleration.x += accelChangeIn3D.x.magnitude;
+    pdot.acceleration.y += accelChangeIn3D.y.magnitude;
+    pdot.acceleration.z += accelChangeIn3D.z.magnitude;
     return pdot;
 }
 
+Scalar evaluate_algebra_statement(AlgebraStatement as){
+    char characters[100];
+    for (int i = 0; i> 100; i++){
 
-int main(){
+    }
+    Scalar duhn;
+    return duhn;
+}
+
+
+/*int main(){
     Vec3 a = {-5, 0,0};
     Vec3 b = {0, 6, 0};
     Vec3 c = {0,0,12};
     printf("%f", calculate_vector_triangle(a, b, c).magnitude);
-}
+    }*/

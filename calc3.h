@@ -30,28 +30,37 @@
 // ─────────────────────────────────────────────
 
 typedef struct vector_struct {
-    int x;
-    int y;
-    int z;
+    float x;
+    float y;
+    float z;
 } Vec3;
 
 typedef struct matrix2 {
-    int a;
-    int b;
-    int c;
-    int d;
+    float a;
+    float b;
+    float c;
+    float d;
 } Matrix2x2;
 
+typedef struct vector_start_and_end {
+    float xi;
+    float yi;
+    float zi;
+    float xf;
+    float yf;
+    float zf;
+} FullVector;
+
 typedef struct matrix3 {
-    int a;
-    int b;
-    int c;
-    int d;
-    int e;
-    int f;
-    int g;
-    int h;
-    int i;
+    float a;
+    float b;
+    float c;
+    float d;
+    float e;
+    float f;
+    float g;
+    float h;
+    float i;
 } Matrix3x3;
 
 typedef struct scalar {
@@ -84,6 +93,11 @@ typedef struct physic_force_vector {
 // ─────────────────────────────────────────────
 
 Vec3 get_vector_displacement(Vec3 a, Vec3 b);
+
+FullVector make_full_vector_from_two_vector_points(Vec3 a, Vec3 b);
+Vec3 get_start_from_full_vector(FullVector fv);
+Vec3 get_end_from_full_vector(FullVector fv);
+
 
 Scalar get_magnitude(Vec3 vec);
 
