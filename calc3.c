@@ -6,7 +6,6 @@
 /////////////////////////////////
 // "DOMO ARIGATO MR ROBOTO
 // MATA AU HU MADE...... //
-#include <iterator>
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>
@@ -79,6 +78,32 @@ typedef struct physic_basic_object {
     Vec3 acceleration;
     Vec3 forces[];
 } PDot;
+
+typedef struct math_variables {
+    float a;
+    float b;
+    float c;
+    float d;
+    float f;
+    float g;
+    float h;
+    float i;
+    float j;
+    float k;
+    float l;
+    float m;
+    float p;
+    float q;
+    float r;
+    float s;
+    float t;
+    float u;
+    float v;
+    float w;
+    float x;
+    float y;
+    float z;
+} MathVariables;
 
 typedef struct physic_force_vector {
     float newtons;
@@ -377,15 +402,15 @@ PDot time_push(PDot pdot, Time time){
     return pdot;
 }
 
-Scalar evaluate_algebra_statement(AlgebraStatement as){
+Scalar evaluate_algebra_statement(AlgebraStatement as, MathVariables mv){
     //evaluate_algebra_statement: given an algebra statement as,
     // evaluate each characters and return a Scalar in terms of
     // a float value response from the algebraic statement.
     // does NOT support radians or imaginary numbers
     char characters[100];//make our char buffe
     int endOfStatement = 0;
-    while (as.statement[i] != '\0') {//while we're still in the cstring
-        characters[i] = as.statement[i]; //put the char into the char buffer
+    while (as.statement[endOfStatement] != '\0') {//while we're still in the cstring
+        characters[endOfStatement] = as.statement[endOfStatement]; //put the char into the char buffer
         endOfStatement++;
     }
     //now we're going to increment through each operation and evluate it
@@ -418,7 +443,24 @@ Scalar evaluate_algebra_statement(AlgebraStatement as){
                 // if it's a little dirty with it
             }
             endOfParaStatement = i; //set the end
-            Scalar paraResult =  evaluate_algebra_statement(inParaStatement);
+            Scalar paraResult =  evaluate_algebra_statement(inParaStatement, mv);
+            //okay so now we evaluated this and we have a scalar result from our evaluation (presumably)
+            // now we have to snip between beginning and end and get
+            // (3a + 4b + 3^c) + 23k = (19) + 23k
+
+            //this subroutine is complex
+            // so the idea behind it is, given an array A (in our case a char vector, but really could be any array)
+            // we wanna trim the elements so that from range A:B the elements are removed
+            // as tim peters my queen once said:
+            //      "Explicit is better than implicit" --- Tim Peters, The Zen of Python
+            // also i'm not dutch, so i don't know the most obvious way to do this. i'm sure
+            // stdlib has a function that does this but goddamit this is an educational project!!!
+            // anyways back the explanation: basically we're gonna first shift everything down so our
+            // example statement:
+            //      char * e = "(3K + 2) + 1"
+            // turns into:
+            //      char *e = "(_____) + 1"
+            // then we copy this char buffer and clear it
         }
     }
     Scalar duhn;

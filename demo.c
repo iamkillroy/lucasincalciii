@@ -193,7 +193,7 @@ int main(void) {
     //STEP 2, get the cross product of them
     Vec3 ABcrossAC = get_cross_product(AB, AC);
     FullVector orthogonalVector = {-6,0,0, ABcrossAC.x, ABcrossAC.y, ABcrossAC.z};
-    FullVector pts[3] = {triangleA, triangleB, triangleC};
+    FullVector pts[4] = {triangleA, triangleB, triangleC, orthogonalVector};
 
     uint32_t lengthOfPts = sizeof(pts)/sizeof(FullVector);
 
