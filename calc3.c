@@ -6,6 +6,7 @@
 /////////////////////////////////
 // "DOMO ARIGATO MR ROBOTO
 // MATA AU HU MADE...... //
+#include <iterator>
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>
@@ -377,9 +378,48 @@ PDot time_push(PDot pdot, Time time){
 }
 
 Scalar evaluate_algebra_statement(AlgebraStatement as){
-    char characters[100];
-    for (int i = 0; i> 100; i++){
-
+    //evaluate_algebra_statement: given an algebra statement as,
+    // evaluate each characters and return a Scalar in terms of
+    // a float value response from the algebraic statement.
+    // does NOT support radians or imaginary numbers
+    char characters[100];//make our char buffe
+    int endOfStatement = 0;
+    while (as.statement[i] != '\0') {//while we're still in the cstring
+        characters[i] = as.statement[i]; //put the char into the char buffer
+        endOfStatement++;
+    }
+    //now we're going to increment through each operation and evluate it
+    // remember!!!!
+    //  P * parantheses
+    //  E * exponents
+    //  M * multiplication
+    //  D * division
+    //  A * addition
+    //  S * subtrction
+    // so we're gonna have these arrays
+    //so each loop will evaluate in this order
+    // first: parantheses loop
+    bool evaluatingPara = false; //todo, allow nested parantheses
+    uint8_t beginningOfParaStatement = 255;
+    uint8_t endOfParaStatement = 255;
+    for (int i = 0; i<endOfStatement; i++){
+        if (characters[i] == '(') {
+            evaluatingPara = true;
+            beginningOfParaStatement = i; // set the beginnign
+            //now here's the trick: recursively call this function
+            // by making an algebraic statement from ( until ) and
+            // use that resulting scalar in our main statement
+            AlgebraStatement inParaStatement; //this is a parastatement
+            char paraBuffer[50]; //get that char buffer
+            while (!(characters[i] == ')')){
+                paraBuffer[i] = characters[i];
+                i++; //iterate the iteratable var a second time
+                //gross i know!!! but does the job even
+                // if it's a little dirty with it
+            }
+            endOfParaStatement = i; //set the end
+            Scalar paraResult =  evaluate_algebra_statement(inParaStatement);
+        }
     }
     Scalar duhn;
     return duhn;
