@@ -28,8 +28,8 @@
 
 #define WIDTH  800
 #define HEIGHT 600
-#define SCALE 500
-#define CAM_Z 300
+#define SCALE 1000
+#define CAM_Z 50
 #define FRAMECOUNT 63
 #define FRAMEMULT 1
 
@@ -46,7 +46,6 @@ uint32_t pixels[WIDTH * HEIGHT];
 // during iteration they get changed!
 float ROT_X = 0.4f;  // tilt down slightly
 float ROT_Y = -0.6f;  // spin right slightly
-
 // rotate around X axis (tilts up/down)
 Vec3 rotateX(Vec3 v, float angle) {
     return (Vec3){
@@ -66,8 +65,8 @@ Vec3 rotateY(Vec3 v, float angle) {
 }
 
 Vec3 transform(Vec3 v) {
-    v = rotateX(v, ROT_X);
     v = rotateY(v, ROT_Y);
+    v = rotateX(v, ROT_X);
     return v;
 }
 FullVector transformFull(FullVector fv) {
@@ -113,7 +112,11 @@ void make_gif_from_pngs(int numFrames) {
     for (int i = 0; i < numFrames; i++) {
         snprintf(filename, sizeof(filename), "work/out%d.png", i);
         uint8_t *px = stbi_load(filename, &w, &h, &c, 4);
-        msf_gif_frame(&gif, px, 10, 16, w * 4);
+        //okay another gripe/question
+        // the third int parameter of this function is centiframes
+        // HIGHER values mean LOWER frame rates
+        // which seems pretty counter intuitive
+        msf_gif_frame(&gif, px, 6, 16, w * 4);
         stbi_image_free(px);
     }
 
@@ -137,6 +140,9 @@ void draw_frame_from_vectors(FullVector * arrayOfVectors, uint32_t lengthOfVecto
     // proprieratry format but thank you for the wonderful
     // png library
     olivec_fill(oc, 0xFF550000);
+    char charbuf[32];
+    snprintf(charbuf, sizeof(charbuf), "33 fps - %d/%d ", frameNumber, FRAMECOUNT-1);
+    olivec_text(oc, charbuf, 10, 10, olivec_default_font, 2, 0xFFFFFFFF);
     Vec3 origin = {0,0,0};
     //draw the positional vectors
     Vec3 xNeg = {-20, 0, 0};
@@ -185,17 +191,25 @@ int main(void) {
     Vec3 AC = get_vector_displacement((Vec3){-6,0,0}, (Vec3){0,0,14});
     //STEP 2, get the cross product of them
     Vec3 ABcrossAC = get_cross_product(AB, AC);
-    FullVector orthogonalVector = {-6,0,0, ABcrossAC.x, ABcrossAC.y, ABcrossAC.z};
-    FullVector pts[4] = {triangleA, triangleB, triangleC, orthogonalVector};
+    //FullVector orthogonalVector = {-6,0,0, ABcrossAC.x, ABcrossAC.y, ABcrossAC.z};
+    FullVector pts[3] = {triangleA, triangleB, triangleC};
 
     uint32_t lengthOfPts = sizeof(pts)/sizeof(FullVector);
 
 
-    for (int i = 0; i<(FRAMECOUNT * FRAMEMULT); i++){
+    /*for (int i = 0; i<(FRAMECOUNT * FRAMEMULT); i++){
         ROT_Y = ROT_Y + (0.1 * FRAMEMULT);
+        ROT_X = ROT_X + (0.1 * FRAMEMULT);
         draw_frame_from_vectors(pts, lengthOfPts, i);
     }
-    make_gif_from_pngs(FRAMECOUNT);
+    make_gif_from_pngs(FRAMECOUNT);*/
+    for (int i = 0; i < (FRAMECOUNT * FRAMEMULT); i++) {
+        float t = (float)i / (FRAMECOUNT * FRAMEMULT);  // 0.0 to 1.0
+        ROT_Y = t * 2.0f * M_PI;  // full 360 spin
+        ROT_X = 0.4f;              // fixed tilt, no wobble
+        draw_frame_from_vectors(pts, lengthOfPts, i);
+    }
+  make_gif_from_pngs(FRAMECOUNT);
 
     //printf("%f", calculate_vector_triangle(a, b, c).magnitude);
 
