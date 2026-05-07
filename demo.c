@@ -28,9 +28,10 @@
 
 #define WIDTH  800
 #define HEIGHT 600
-#define SCALE 2000
-#define CAM_Z 50  // pretend camera is 5 units back
-#define FRAMECOUNT 100
+#define SCALE 1000
+#define CAM_Z 30
+#define FRAMECOUNT 63
+#define FRAMEMULT 2
 
 
 //define my pixels
@@ -99,8 +100,9 @@ void draw_vec_from(Olivec_Canvas oc, Vec3 start, Vec3 end, uint32_t color) {
 
 
 void make_gif_from_pngs(int numFrames) {
+    printf("making gif...\n");
     char filename[64];
-    snprintf(filename, sizeof(filename), "out%d.png", 0);
+    snprintf(filename, sizeof(filename), "work/out%d.png", 0);
 
     int w, h, c;
     stbi_info(filename, &w, &h, &c);
@@ -109,23 +111,32 @@ void make_gif_from_pngs(int numFrames) {
     msf_gif_begin(&gif, w, h);
 
     for (int i = 0; i < numFrames; i++) {
-        snprintf(filename, sizeof(filename), "out%d.png", i);
+        snprintf(filename, sizeof(filename), "work/out%d.png", i);
         uint8_t *px = stbi_load(filename, &w, &h, &c, 4);
         msf_gif_frame(&gif, px, 10, 16, w * 4);
         stbi_image_free(px);
     }
 
     MsfGifResult out = msf_gif_end(&gif);
-    FILE *f = fopen("out.gif", "wb");
+    FILE *f = fopen("result.gif", "wb");
     fwrite(out.data, out.dataSize, 1, f);
     fclose(f);
     msf_gif_free(out);
+    printf("done!\n");
 }
 
 void draw_frame_from_vectors(FullVector * arrayOfVectors, uint32_t lengthOfVectorArray, int frameNumber){
+    printf("generating frames: %d/%d\n", frameNumber, FRAMECOUNT * FRAMEMULT);
     Olivec_Canvas oc = olivec_canvas(pixels, WIDTH, HEIGHT, WIDTH);
     //fill the background and draw vectors
-    olivec_fill(oc, 0xFF000011);
+    // dear tsoding
+    // i'm sure there's a very good reason for this but why
+    // for the love of all that is conventional
+    // are we using ABGR instead of RGBA? is there a good
+    // reason for this??? actually??? grrr for the weird
+    // proprieratry format but thank you for the wonderful
+    // png library
+    olivec_fill(oc, 0xFF550000);
     Vec3 origin = {0,0,0};
     //draw the positional vectors
     Vec3 xNeg = {-20, 0, 0};
@@ -152,7 +163,7 @@ void draw_frame_from_vectors(FullVector * arrayOfVectors, uint32_t lengthOfVecto
         olivec_rect(oc, px-3, py-3, 6, 6, 0xFFFFFF00); // yellow dot
         }*/
     char filename[64];
-    snprintf(filename, sizeof(filename), "out%d.png", frameNumber);
+    snprintf(filename, sizeof(filename), "work/out%d.png", frameNumber);
     stbi_write_png(filename, WIDTH, HEIGHT, 4, pixels, sizeof(uint32_t) * WIDTH);
 }
 
@@ -160,7 +171,6 @@ void draw_frame_from_vectors(FullVector * arrayOfVectors, uint32_t lengthOfVecto
 int main(void) {
 
 
-    // draw each axis as one full line through origin
 
 
 
@@ -173,8 +183,8 @@ int main(void) {
 
     FullVector pts[3] = {triangleA, triangleB, triangleC};
     uint32_t lengthOfPts = sizeof(pts)/sizeof(FullVector);
-    for (int i = 0; i<FRAMECOUNT; i++){
-        ROT_Y = ROT_Y + 0.1;
+    for (int i = 0; i<(FRAMECOUNT * FRAMEMULT); i++){
+        ROT_Y = ROT_Y + (0.1 * FRAMEMULT);
         draw_frame_from_vectors(pts, lengthOfPts, i);
     }
     make_gif_from_pngs(FRAMECOUNT);
