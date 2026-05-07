@@ -387,8 +387,8 @@ Scalar evaluate_algebra_statement(AlgebraStatement as){
 
 
 /*int main(){
-    Vec3 a = {-5, 0,0};
-    Vec3 b = {0, 6, 0};
-    Vec3 c = {0,0,12};
+    Vec3 a = {-4, 0,0};
+    Vec3 b = {0, 5, 0};
+    Vec3 c = {0,0,10};
     printf("%f", calculate_vector_triangle(a, b, c).magnitude);
     }*/

@@ -28,10 +28,10 @@
 
 #define WIDTH  800
 #define HEIGHT 600
-#define SCALE 1000
-#define CAM_Z 30
+#define SCALE 500
+#define CAM_Z 300
 #define FRAMECOUNT 63
-#define FRAMEMULT 2
+#define FRAMEMULT 1
 
 
 //define my pixels
@@ -169,26 +169,35 @@ void draw_frame_from_vectors(FullVector * arrayOfVectors, uint32_t lengthOfVecto
 
 
 int main(void) {
+    /*
+     * main -- this is where you put yo
+     * little simulation at.
+     * the useful functions usually take more complicated components, like
+     * FullVector for draw_frame_from_vectors.
+     */
 
+    //define three vectors on triangle
+    FullVector triangleA = {-6,0,0, 0,7,0};//AKA AB
+    FullVector triangleB = {0,7,0, 0,0,14}; //AKA BC
+    FullVector triangleC = {0,0,14, -6,0,0,}; //AKA CA
 
+    Vec3 AB = get_vector_displacement((Vec3){-6,0,0}, (Vec3){0,7,0});
+    Vec3 AC = get_vector_displacement((Vec3){-6,0,0}, (Vec3){0,0,14});
+    //STEP 2, get the cross product of them
+    Vec3 ABcrossAC = get_cross_product(AB, AC);
+    FullVector orthogonalVector = {-6,0,0, ABcrossAC.x, ABcrossAC.y, ABcrossAC.z};
+    FullVector pts[4] = {triangleA, triangleB, triangleC, orthogonalVector};
 
-
-
-
-
-    FullVector triangleA = {-6,0,0, 0,7,0};
-    FullVector triangleB = {0,7,0, 0,0,14};
-    FullVector triangleC = {0,0,14, -6,0,0,};
-
-
-    FullVector pts[3] = {triangleA, triangleB, triangleC};
     uint32_t lengthOfPts = sizeof(pts)/sizeof(FullVector);
+
+
     for (int i = 0; i<(FRAMECOUNT * FRAMEMULT); i++){
         ROT_Y = ROT_Y + (0.1 * FRAMEMULT);
         draw_frame_from_vectors(pts, lengthOfPts, i);
     }
     make_gif_from_pngs(FRAMECOUNT);
 
+    //printf("%f", calculate_vector_triangle(a, b, c).magnitude);
 
     return 0;
 }
