@@ -26,12 +26,13 @@
 #include "msf_gif.h"
 
 
-#define WIDTH  800
-#define HEIGHT 600
-#define SCALE 1000
+#define WIDTH  200 //width and height of image
+#define HEIGHT 200 //don't really mess with these
+#define SCALE 500
 #define CAM_Z 50
-#define FRAMECOUNT 63
+#define FRAMECOUNT 126
 #define FRAMEMULT 1
+#define CENTIFRAMESPERSEC 3
 
 
 //define my pixels
@@ -116,7 +117,7 @@ void make_gif_from_pngs(int numFrames) {
         // the third int parameter of this function is centiframes
         // HIGHER values mean LOWER frame rates
         // which seems pretty counter intuitive
-        msf_gif_frame(&gif, px, 6, 16, w * 4);
+        msf_gif_frame(&gif, px, CENTIFRAMESPERSEC, 16, w * 4);
         stbi_image_free(px);
     }
 
@@ -141,8 +142,8 @@ void draw_frame_from_vectors(FullVector * arrayOfVectors, uint32_t lengthOfVecto
     // png library
     olivec_fill(oc, 0xFF550000);
     char charbuf[32];
-    snprintf(charbuf, sizeof(charbuf), "33 fps - %d/%d ", frameNumber, FRAMECOUNT-1);
-    olivec_text(oc, charbuf, 10, 10, olivec_default_font, 2, 0xFFFFFFFF);
+    snprintf(charbuf, sizeof(charbuf), "%d/%d ", frameNumber, FRAMECOUNT-1);
+    olivec_text(oc, charbuf, 10, 10, olivec_default_font, 1, 0xFFFFFFFF);
     Vec3 origin = {0,0,0};
     //draw the positional vectors
     Vec3 xNeg = {-20, 0, 0};
