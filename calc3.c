@@ -6,6 +6,7 @@
 /////////////////////////////////
 // "DOMO ARIGATO MR ROBOTO
 // MATA AU HU MADE...... //
+#include <cstdint>
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>
@@ -402,6 +403,41 @@ PDot time_push(PDot pdot, Time time){
     return pdot;
 }
 
+char * float_to_char(float a){
+    //float_to_char: given a user passed float, this function converts
+    // the float to a char array WHICH IS MALLOCED TO THE HEAP. IT MUST
+    // BE C A L L E E FREED!!! you've been warned
+
+    //so how do we convert this? well the idea is that
+    // if we module % 10 this thing we can get each place
+    // (i saw this on a leetcode problem)
+    uint8_t float_values[32] = {0};
+    uint8_t places_count;
+    for (;;places_count++){
+        //so we're gonna keep moduloing the result of the float up
+        // to 32 because i'm pretty sure that's it's max accuracy
+        // TODO actually make this work starting from lowest integer to highest possible
+        // AND filter out garbage input
+        // for example:
+        //      31.23456
+        // >>> 31.23456 % 0.01
+        /* 0.004559999999997675
+        >>> 31.23456 % 0.001
+        0.0005599999999976752
+        >>> 31.23456 % 0.0001
+        5.999999999682858e-05
+        */
+        //see this garbage that pytohn spits out ^^^
+        // you gotta figure out a way to find the lowest part of the mantissa and STILL preserve
+        // accuracy when converting from float to char
+        // this entire function is a porject in of itself dawg
+
+        uint64_t evilMantissaMultiplier = places_count - ;
+        uint64_t numberWIthABunchOfSuceedingZeroes = (324 % 100) - (324 % 10);
+
+    }
+}
+
 Scalar evaluate_algebra_statement(AlgebraStatement as, MathVariables mv){
     //evaluate_algebra_statement: given an algebra statement as,
     // evaluate each characters and return a Scalar in terms of
@@ -461,6 +497,22 @@ Scalar evaluate_algebra_statement(AlgebraStatement as, MathVariables mv){
             // turns into:
             //      char *e = "(_____) + 1"
             // then we copy this char buffer and clear it
+
+            char newAlgebraStatement[100];
+            //this is our new copy of the statement
+            //now, we finna copy this for every value up till we achieve the i result
+            // o(n) yep i know
+            for (int i =0; i>beginningOfParaStatement; i++){
+                newAlgebraStatement[i] = characters[i];
+                //get the CHARACTER array which returns the character value at that certain point
+
+            }
+            //okay now we're at the parastatement's result. we're gonna convert the para
+            // scalar value from a float value to become a char array and then throw that in
+            for (int i=0; i<endOfParaStatement; i++){
+                newAlgebraStatement[i] = 0;
+                //now we add t
+            }
         }
     }
     Scalar duhn;

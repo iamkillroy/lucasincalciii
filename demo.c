@@ -27,10 +27,10 @@
 
 
 #define WIDTH  200 //width and height of image
-#define HEIGHT 200 //don't really mess with these
-#define SCALE 300
-#define CAM_Z 50
-#define FRAMECOUNT 255
+#define HEIGHT 200 //smaller frame = faster gen speeds
+#define SCALE 1000 //the scale (resolution) of the lines being generated. AKA the "quality"
+#define CAM_Z 100 //the distance camera z is from (0,0,0) increase to get the result
+#define FRAMECOUNT 255 //frame count. frame basis is
 #define FRAMEMULT 1
 #define CENTIFRAMESPERSEC 3
 
@@ -45,8 +45,8 @@ uint32_t pixels[WIDTH * HEIGHT];
 ///GLOBAL VARS
 // these are used for rotation
 // during iteration they get changed!
-float ROT_X = 0.4f;  // tilt down slightly
-float ROT_Y = -0.6f;  // spin right slightly
+float ROT_X = -0.4f;  // tilt down slightly
+float ROT_Y = 0.6f;  // spin right slightly
 // rotate around X axis (tilts up/down)
 Vec3 rotateX(Vec3 v, float angle) {
     return (Vec3){
@@ -193,7 +193,9 @@ int main(void) {
     //STEP 2, get the cross product of them
     Vec3 ABcrossAC = get_cross_product(AB, AC);
     FullVector orthogonalVector = {-6,0,0, ABcrossAC.x, ABcrossAC.y, ABcrossAC.z};
+    //FullVector pts[3] = {triangleA, triangleB, triangleC};
     FullVector pts[4] = {triangleA, triangleB, triangleC, orthogonalVector};
+
 
     uint32_t lengthOfPts = sizeof(pts)/sizeof(FullVector);
 
@@ -211,7 +213,6 @@ int main(void) {
         draw_frame_from_vectors(pts, lengthOfPts, i);
     }
   make_gif_from_pngs(FRAMECOUNT);
-  system("open result.gif");
 
     //printf("%f", calculate_vector_triangle(a, b, c).magnitude);
 
