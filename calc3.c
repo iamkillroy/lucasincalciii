@@ -6,7 +6,6 @@
 /////////////////////////////////
 // "DOMO ARIGATO MR ROBOTO
 // MATA AU HU MADE...... //
-#include <cstdint>
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>
@@ -407,35 +406,16 @@ char * float_to_char(float a){
     //float_to_char: given a user passed float, this function converts
     // the float to a char array WHICH IS MALLOCED TO THE HEAP. IT MUST
     // BE C A L L E E FREED!!! you've been warned
+    //unlike your malloc mine sucks ass!!!
+    char *buffer = malloc(sizeof(char) * 32);//thank you Miss Delan A of Australiba
+    //stackoverfow post here: https://stackoverflow.com/questions/2988791/converting-float-to-char
+    int ret = snprintf(buffer, sizeof(char )* 32, "%f", a);
 
-    //so how do we convert this? well the idea is that
-    // if we module % 10 this thing we can get each place
-    // (i saw this on a leetcode problem)
-    uint8_t float_values[32] = {0};
-    uint8_t places_count;
-    for (;;places_count++){
-        //so we're gonna keep moduloing the result of the float up
-        // to 32 because i'm pretty sure that's it's max accuracy
-        // TODO actually make this work starting from lowest integer to highest possible
-        // AND filter out garbage input
-        // for example:
-        //      31.23456
-        // >>> 31.23456 % 0.01
-        /* 0.004559999999997675
-        >>> 31.23456 % 0.001
-        0.0005599999999976752
-        >>> 31.23456 % 0.0001
-        5.999999999682858e-05
-        */
-        //see this garbage that pytohn spits out ^^^
-        // you gotta figure out a way to find the lowest part of the mantissa and STILL preserve
-        // accuracy when converting from float to char
-        // this entire function is a porject in of itself dawg
-
-        uint64_t evilMantissaMultiplier = places_count - ;
-        uint64_t numberWIthABunchOfSuceedingZeroes = (324 % 100) - (324 % 10);
-
+    if (ret < 0) {
+        exit(1);
     }
+    //malloc our char buffer to the heap
+    return buffer;
 }
 
 Scalar evaluate_algebra_statement(AlgebraStatement as, MathVariables mv){
@@ -460,7 +440,7 @@ Scalar evaluate_algebra_statement(AlgebraStatement as, MathVariables mv){
     // so we're gonna have these arrays
     //so each loop will evaluate in this order
     // first: parantheses loop
-    bool evaluatingPara = false; //todo, allow nested parantheses
+    bool evaluatingPara = false;
     uint8_t beginningOfParaStatement = 255;
     uint8_t endOfParaStatement = 255;
     for (int i = 0; i<endOfStatement; i++){
@@ -505,24 +485,42 @@ Scalar evaluate_algebra_statement(AlgebraStatement as, MathVariables mv){
             for (int i =0; i>beginningOfParaStatement; i++){
                 newAlgebraStatement[i] = characters[i];
                 //get the CHARACTER array which returns the character value at that certain point
-
             }
             //okay now we're at the parastatement's result. we're gonna convert the para
             // scalar value from a float value to become a char array and then throw that in
             for (int i=0; i<endOfParaStatement; i++){
                 newAlgebraStatement[i] = 0;
-                //now we add t
+                //now we solve the
             }
         }
     }
     Scalar duhn;
     return duhn;
 }
+Scalar evaluate_simple_algebra_statement(AlgebraStatement as){
+    //evaluate_simple_algebra_statement: given an algebra statement as,
+    // we're gonna evaluate the characters so that we get a scalar value, doing all orders
+    // the "simple " part of the statement requires no unknown constants and
+    // no parantheses. exponents are okay. speaking of which
+    //
+    // ALGEBRA STATEMENT GUIDANCE: in order to make a valid algebra statement: one must
+    //          * use spaces between each expression and algebraic symbol
+    //              Ex: 3 + 5  --> 8
+    //          * use NO constants in a simple algebraic statement
+    int8_t expLocations[64] = {-1};
+    int8_t multLocations[64] = {-1};
+    int8_t divLocations[64] = {-1};
+    int8_t addLocations[64] = {-1};
+    int8_t subLocations[64] = {-1};
+    char equationBuffer[64] = {NULL};
+    char *copyOfASPointer = as.statement; //copy the pointer
+    //now we can increment through it
+    for (;*copyOfASPointer!=0;){
+        if (*copyOfASPointer != )
+        copyOfASPointer++;//increment the pointer by one
+    }
+}
 
-
-/*int main(){
-    Vec3 a = {-4, 0,0};
-    Vec3 b = {0, 5, 0};
-    Vec3 c = {0,0,10};
-    printf("%f", calculate_vector_triangle(a, b, c).magnitude);
-    }*/
+int main(){
+    char* e = float_to_char(32.256);
+}
