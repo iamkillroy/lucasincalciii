@@ -497,6 +497,27 @@ Scalar evaluate_algebra_statement(AlgebraStatement as, MathVariables mv){
     Scalar duhn;
     return duhn;
 }
+bool is_mathematical_symbol(char symbol){
+    //is_mathematical_symbol: given a single char symbol, this
+    // function returns true if the char is any of these symbols:
+    //      +  -  *  /  ^  =
+    // and false otherwise
+    switch(symbol){
+        case '+':
+            return true;
+        case '-':
+            return true;
+        case '*':
+            return true;
+        case '/':
+            return true;
+        case '^':
+            return true;
+        case '=':
+            return true;
+    }
+    return false;
+}
 Scalar evaluate_simple_algebra_statement(AlgebraStatement as){
     //evaluate_simple_algebra_statement: given an algebra statement as,
     // we're gonna evaluate the characters so that we get a scalar value, doing all orders
@@ -504,23 +525,81 @@ Scalar evaluate_simple_algebra_statement(AlgebraStatement as){
     // no parantheses. exponents are okay. speaking of which
     //
     // ALGEBRA STATEMENT GUIDANCE: in order to make a valid algebra statement: one must
-    //          * use spaces between each expression and algebraic symbol
-    //              Ex: 3 + 5  --> 8
+    //          * use NO spaces between each expression and algebraic symbol
+    //              Ex: 3+5  --> 8
     //          * use NO constants in a simple algebraic statement
     int8_t expLocations[64] = {-1};
+    uint8_t expCounter = 0;
     int8_t multLocations[64] = {-1};
+    uint8_t multCounter = 0;
     int8_t divLocations[64] = {-1};
+    uint8_t divCounter = 0;
     int8_t addLocations[64] = {-1};
+    uint8_t addCounter = 0;
     int8_t subLocations[64] = {-1};
-    char equationBuffer[64] = {NULL};
+    uint8_t subCounter = 0;
+    char equationBuffer[64] = {0};//null terminated buffer
     char *copyOfASPointer = as.statement; //copy the pointer
+    int i = 0;
     //now we can increment through it
     for (;*copyOfASPointer!=0;){
-        if (*copyOfASPointer != )
+        equationBuffer[i] = *copyOfASPointer;
+        switch (*copyOfASPointer){
+            case 0x5E: //AKA ^ or pow
+                expLocations[expCounter] = i;
+                expCounter++;
+                break;
+            case 0x2A://AKA * multiply
+                multLocations[multCounter] = i;
+                multCounter++;
+                break;
+            case 0x2F: //AKA / divide
+                divLocations[divCounter] = i;
+                divCounter++;
+                break;
+            case 0x2B: //AKA add
+                addLocations[addCounter] = i;
+                addCounter++;
+                break;
+            case 0x2D: //AKA suvtract -
+                subLocations[subCounter] = i;
+                subCounter++;
+                break;
+
+        }
         copyOfASPointer++;//increment the pointer by one
+        i++;
+    }
+    printf("Exponential %d Multiply %d Divide %d Add %d Subtract %d\n", expCounter, multCounter, divCounter, addCounter, subCounter);
+    //now, we should have a count of every single algebraic symbol within the equation
+    //now we need to evaluate each of the terms
+    //first, exponents
+    printf("exp first\n");
+    for (int8_t i = 0; i<expCounter; i++){
+        //so for each position we find this in, we're gonna look to our left, because that's where
+        // the exponent is, and we're gonna keep looking until we get to the next symbol, which means that
+        // we know that this is the end, or if the position we're iterating at becomes zero, which really means
+        // this is the end
+        char exponentBase[32] = {0};
+        char exponentPower[32] = {0};
+        uint8_t backtracker = expCounter;
+        uint8_t backtrackIndex = 0;
+        //aka while we haven't reached the end and while the symbol that we're currently backtracking
+        // into is not a mathematical symbol
+        // FIRST let's get the exponent base
+        while ((backtracker >= 0) && !(is_mathematical_symbol(equationBuffer[backtracker]))){
+            exponentBase[backtrackIndex] = equationBuffer[backtracker];
+            printf("%c", equationBuffer[backtracker]);
+            backtracker--;
+        }
+
+
     }
 }
 
 int main(){
-    char* e = float_to_char(32.256);
+    AlgebraStatement myAlgebraStatement;
+    myAlgebraStatement.statement = "37^2 + 10";
+    MathVariables mv;
+    evaluate_simple_algebra_statement(myAlgebraStatement);
 }
