@@ -622,7 +622,6 @@ AlgebraStatement __rec_get_exp_algebra_statement(AlgebraStatement as, int8_t loc
     //we're gonna keep going until we get either to the end of the char OR we get null terminated
     newEquationBuffer[beginningOfExponentialStatementInAS+lenOfExponentialStatement+i+1] = equationBuffer[endOfExponentialStatementInAS+i];
     printf("new iteration\n%s\n", newEquationBuffer);
-    printf("%d\n", endOfExponentialStatementInAS+i);
     printf("%d\n--------\n", equationBuffer[endOfExponentialStatementInAS+i]);
     if (equationBuffer[endOfExponentialStatementInAS+i] == 0){break;}
 }
