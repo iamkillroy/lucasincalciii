@@ -684,10 +684,12 @@ Scalar evaluate_simple_algebra_statement(AlgebraStatement as){
     //now, we should have a count of every single algebraic symbol within the equation
     //now we need to evaluate each of the terms
     //first, exponents
+    AlgebraStatement currentWorkingStatement = {equationBuffer};
     for (int i=0;i<=expCounter;i++){
-        if (has_symbol('^', equationBuffer)){
-            int whereSymbolIs = where_is_symbol('^', equationBuffer);
-            
+        if (has_symbol('^', currentWorkingStatement.statement)){
+            int whereSymbolIs = where_is_symbol('^', currentWorkingStatement.statement);
+            currentWorkingStatement = __rec_get_exp_algebra_statement(currentWorkingStatement, whereSymbolIs);
+            printf("%s", currentWorkingStatement.statement);
         }
     }
 }
@@ -696,7 +698,7 @@ Scalar evaluate_simple_algebra_statement(AlgebraStatement as){
 
 int main(){
     AlgebraStatement myAlgebraStatement;
-    myAlgebraStatement.statement = "19 + 3^2 + 10";
+    myAlgebraStatement.statement = "7^1 + 19 + 3^2 + 10 + 2^2";
     MathVariables mv;
     evaluate_simple_algebra_statement(myAlgebraStatement);
 }
