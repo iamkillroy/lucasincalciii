@@ -6,7 +6,6 @@
 /////////////////////////////////
 // "DOMO ARIGATO MR ROBOTO
 // MATA AU HU MADE...... //
-#include <cstring>
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>
@@ -633,26 +632,32 @@ Scalar evaluate_simple_algebra_statement(AlgebraStatement as){
         printf("beginning: %d end: %d\n",beginningOfExponentialStatementInAS, endOfExponentialStatementInAS);
         char newEquationBuffer[MAX_ALGEBRA_STATEMENT_SIZE];
         //okay so basically let's just iterate until we go to the start of where we replace
-        for (int i= 0;i>beginningOfExponentialStatementInAS;i++){newEquationBuffer[i] = equationBuffer[i];}
+        for (int i= 0;i<beginningOfExponentialStatementInAS;i++){newEquationBuffer[i] = equationBuffer[i];}
+        printf("\nequationuffer at i is (%s)\n", newEquationBuffer);
+
         //okay we've reassigned up to the new equationbuffer's before point now
         newEquationBuffer[beginningOfExponentialStatementInAS] = ' ';//just for some nice spaces :)
         //okay now we reassign up till the null terminate here on the string
-        for(int i = beginningOfExponentialStatementInAS+1; i<endOfExponentialStatementInAS; i++){
+        int lenOfExponentialStatement = 0;//counting this seperately because strlen is evil
+        for(int j = beginningOfExponentialStatementInAS+1; j<endOfExponentialStatementInAS; j++){
             if (!(*newExponentString==0)){
-                newEquationBuffer[i] = *newExponentString;
+                printf("\n%c\n", *newExponentString);
+                newEquationBuffer[j] = *newExponentString;
                 newExponentString++;
+                lenOfExponentialStatement++;
             }
             else{
                 break;
             }
         }
-        newEquationBuffer[endOfExponentialStatementInAS] = ' ';//just for some nice spaces :)
         //okay booooom null terminated exponent value copied
         // now we gotta go and format everything else together
-        for(int i = endOfExponentialStatementInAS+1; i<MAX_ALGEBRA_STATEMENT_SIZE; i++){
+        for(int i = endOfExponentialStatementInAS; i<MAX_ALGEBRA_STATEMENT_SIZE; i++){
         //we're gonna keep going until we get either to the end of the char OR we get null terminated
         newEquationBuffer[i] = equationBuffer[endOfExponentialStatementInAS];
-        if
+        if (newEquationBuffer[i] == 0){break;}
+        printf("%s", newEquationBuffer);
+    }
     }
 }
 
