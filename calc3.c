@@ -737,16 +737,26 @@ Scalar evaluate_simple_algebra_statement(AlgebraStatement as){
     char equationBuffer[MAX_ALGEBRA_STATEMENT_SIZE] = {0};//null terminated buffer
     char *copyOfASPointer = as.statement; //copy the pointer
     int i = 0;
-    AlgebraStatement currentWorkingStatement = {equationBuffer};
     //now we can increment through it
+    AlgebraStatement currentWorkingStatement = {equationBuffer};
     for (int typeOfAlgebra = 0; typeOfAlgebra<5; typeOfAlgebra++){
         //let's clean all white space fron the statement
 
         char *copyOfASPointer = as.statement; //copy the pointer
-        for (;*copyOfASPointer!=0;){
-            i++;
-            copyOfASPointer++;
+        int i = 0;
+        char copiedBuffer[MAX_ALGEBRA_STATEMENT_SIZE];
+        //put all non space chars into a seperate directory
+        char *write = copyOfASPointer;
+        char *read = copyOfASPointer;
+        while (*read) {
+            if (*read != ' ' && *read != '\t' && *read != '\n') {
+                *write = *read;
+                write++;
+            }
+            read++;
         }
+        *write = '\0';
+        //now let's slip it in ( ͡° ͜ʖ ͡°)
 
         for (;*copyOfASPointer!=0;){
                 equationBuffer[i] = *copyOfASPointer;
