@@ -739,27 +739,22 @@ Scalar evaluate_simple_algebra_statement(AlgebraStatement as){
     int i = 0;
     //now we can increment through it
     AlgebraStatement currentWorkingStatement = {equationBuffer};
+    //let's clean all white space fron the statement
+
+    char copiedBuffer[MAX_ALGEBRA_STATEMENT_SIZE];
+    //put all non space chars into a seperate directory
+
     for (int typeOfAlgebra = 0; typeOfAlgebra<5; typeOfAlgebra++){
-        //let's clean all white space fron the statement
-
-        char *copyOfASPointer = as.statement; //copy the pointer
-        int i = 0;
-        char copiedBuffer[MAX_ALGEBRA_STATEMENT_SIZE];
-        //put all non space chars into a seperate directory
-        char *write = copyOfASPointer;
-        char *read = copyOfASPointer;
-        while (*read) {
-            if (*read != ' ' && *read != '\t' && *read != '\n') {
-                *write = *read;
-                write++;
-            }
-            read++;
-        }
-        *write = '\0';
+        printf("\n\n\nITERATION %d\n", typeOfAlgebra);
         //now let's slip it in ( ͡° ͜ʖ ͡°)
-
         for (;*copyOfASPointer!=0;){
-                equationBuffer[i] = *copyOfASPointer;
+                if (*copyOfASPointer!=' '){
+                    //remove white space
+                    equationBuffer[i] = *copyOfASPointer;
+                }
+                else {
+                    printf("removed new whitespace");
+                }
                 switch (*copyOfASPointer){
                     case 0x5E: //AKA ^ or pow
                         expCounter++;
@@ -811,6 +806,8 @@ Scalar evaluate_simple_algebra_statement(AlgebraStatement as){
         }
 
 
+        printf("Finished iteration %d\n", typeOfAlgebra);
+
 
     }
 }
@@ -819,7 +816,7 @@ Scalar evaluate_simple_algebra_statement(AlgebraStatement as){
 
 int main(){
     AlgebraStatement myAlgebraStatement;
-    myAlgebraStatement.statement = "3^2*2^3";
+    myAlgebraStatement.statement = "3^2 * 2^3";
     MathVariables mv;
     evaluate_simple_algebra_statement(myAlgebraStatement);
 }
