@@ -51,7 +51,7 @@ ShortAlgebraStatement generate_algebra_statement_from_char(char * algebra){
     return result;
 }
 
-CompleteAlgebraStatement create_complete_statement(char *string) {
+CompleteAlgebraStatement generate_complete_statement(char *string) {
     //create_complete_statement: creates a algebra statement using
     // confusing slop
     CompleteAlgebraStatement result = {0};
@@ -71,10 +71,28 @@ CompleteAlgebraStatement create_complete_statement(char *string) {
     return result;
 }
 
+Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
+    char mathBuffer [64] = {0};
+    //make an array of all parts
+    uint64_t parts[4] = {
+        cas.partA.algebra_chars,
+        cas.partB.algebra_chars,
+        cas.partC.algebra_chars,
+        cas.partD.algebra_chars
+    };
 
+    //now let's iterate and find the part
+    for (int i = 0; i < 64; i++) {
+        int partIndex = i / 8;   // which part (should round down cuz int cu)
+        int byteIndex = i % 8;   // floor divide for white byte
+        mathBuffer[i] = (uint8_t)(parts[partIndex] >> (byteIndex * 8));//the mathbuffer by pushing back
+    }
+    printf("%s", mathBuffer);
+
+}
 
 int main(){
     char * hello = "1+2+3+4+5+6+7+8+9+10+11+12+13";
-
-    create_complete_statement(hello);
+    CompleteAlgebraStatement math = generate_complete_statement(hello);
+    resolve_no_variable_algebra_statement(math);
 }
