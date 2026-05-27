@@ -1,7 +1,8 @@
 #include <stdint.h>
 #include <stdio.h>
-
-
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 #define MAX_EQUATION_SIZE 512
 
 
@@ -20,6 +21,24 @@ typedef struct scalar{
     float magnitude;
 } Scalar;
 
+
+char * float_to_char(float a){
+    //float_to_char: given a user passed float, this function converts
+    // the float to a char array WHICH IS MALLOCED TO THE HEAP. IT MUST
+    // BE C A L L E E FREED!!! you've been warned
+    //unlike your malloc mine sucks ass!!!
+    char *buffer = malloc(sizeof(char) * 32);//thank you Miss Delan A of Australiba
+    //stackoverfow post here: https://stackoverflow.com/questions/2988791/converting-float-to-char
+    if (a == (int) a){//aka is it whole
+        //copy it up till we see the period
+        int ret = snprintf(buffer, sizeof(char )* 32, "%d", (int) a);
+    }
+    else{
+        int ret = snprintf(buffer, sizeof(char )* 32, "%f", a);
+    }
+    //malloc our char buffer to the heap
+    return buffer;
+}
 
 ShortAlgebraStatement generate_algebra_statement_from_char(char * algebra){
     //generate_short_algebra_statement_from_char -- given a char pointer to a cstring,
@@ -71,6 +90,32 @@ CompleteAlgebraStatement generate_complete_statement(char *string) {
     return result;
 }
 
+bool is_mathematical_symbol(char symbol){
+    //is_mathematical_symbol: given a single char symbol, this
+    // function returns true if the char is any of these symbols:
+    //      +  -  *  /  ^  =
+    // and false otherwise
+    switch(symbol){
+        case '+':
+            return true;
+        case '-':
+            return true;
+        case '*':
+            return true;
+        case '/':
+            return true;
+        case '^':
+            return true;
+        case '=':
+            return true;
+        case ' ':
+            return true;
+    }
+    return false;
+}
+
+
+
 Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
     char mathBuffer [64] = {0};
     //make an array of all parts
@@ -87,12 +132,89 @@ Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
         int byteIndex = i % 8;   // floor divide for white byte
         mathBuffer[i] = (uint8_t)(parts[partIndex] >> (byteIndex * 8));//the mathbuffer by pushing back
     }
-    printf("%s", mathBuffer);
+    //okay now we've cast the whole statement into a char array
+    // we're going to evaluate this like PEDMAS
+    // P - parantheses
+    // E - exponents
+    // M - multiplication
+    // D - division
+    // A - addition
+    // S - subtraction
+
+    //STEP 1 - P
+    // let's see if there's parantheses
+    for (int i = 0; mathBuffer[i] != 0 && i<64; i++){
+        //making sure we don't go null terminated or etc
+        if (mathBuffer[i] == '('){
+            //we found one, let's store the parantheses value
+            char paranthesesStatement  [64] = {0} ;
+            //go until the end.
+            int j = 0;
+            while (mathBuffer[i] != ')') {
+                paranthesesStatement[j++] = mathBuffer[i++];
+            }
+            //now we have the whole value, null terminated. we can throw this recursively into
+            // this function again and again as long as we replace the value in the end
+            CompleteAlgebraStatement paraStatement = generate_complete_statement(paranthesesStatement);//passes a char * at 0
+            Scalar paraResult = resolve_no_variable_algebra_statement(paraStatement);//evaluate what that is
+            char * charPointerOfResult = float_to_char(paraResult.magnitude);
+            //ai generated slop to do with the awful reality of copying the correct
+            // buffer result here i guess
+            char newBuffer[64] = {0};
+            int writeIdx = 0;
+
+            // find the start of '('
+            int parenStart = i; // where '(' was found
+            int parenEnd = i;   // will point to ')'
+            while (mathBuffer[parenEnd] != ')') parenEnd++;
+
+            // copy everything before '('
+            for (int k = 0; k < parenStart; k++) {
+                newBuffer[writeIdx++] = mathBuffer[k];
+            }
+
+            // insert the result string
+            for (int k = 0; charPointerOfResult[k] != 0; k++) {
+                newBuffer[writeIdx++] = charPointerOfResult[k];
+            }
+
+            // copy everything after ')'
+            for (int k = parenEnd + 1; mathBuffer[k] != 0 && k < 64; k++) {
+                newBuffer[writeIdx++] = mathBuffer[k];
+            }
+
+            // replace mathBuffer with newBuffer
+            memcpy(mathBuffer, newBuffer, 64);
+            free(charPointerOfResult);//manage memory kids
+            //don't do crack and leave that sh free
+        }
+    }
+
+
+    //STEP IDK -- ADDITION
+    for (int i = 0; mathBuffer[i]!=0;i++){
+        if (mathBuffer[i] == '+'){
+            //let's do some quick nonsense checks
+            if (i-1==-1){continue;}//aka, adding with a char before the space
+            if (mathBuffer[i+1] == 0){continue;} //and make sure the next number does exist
+            if (is_mathematical_symbol(mathBuffer[i-1]) || is_mathematical_symbol(mathBuffer[i+1])){continue;}
+            //okay so now we're gonna get the number up until it's the next mathematical symbol, and we're gonna reverse it
+            // to get the first part in A + B
+            char numBefore [32] = {0}; //this is the num before
+            char numAfter [32] = {0};
+            //first let's gat that reverse thing
+            int lenOfNumBefore = 0;
+            for (int beforeI = i-1; !is_mathematical_symbol(mathBuffer[beforeI]); beforeI--){
+                numBefore[lenOfNumBefore] = mathBuffer[beforeI];
+                lenOfNumBefore++;
+            }
+        }
+    }
 
 }
 
 int main(){
-    char * hello = "1+2+3+4+5+6+7+8+9+10+11+12+13";
+    char * hello = "";
     CompleteAlgebraStatement math = generate_complete_statement(hello);
     resolve_no_variable_algebra_statement(math);
 }
