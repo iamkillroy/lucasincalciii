@@ -216,19 +216,16 @@ Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
                 lenOfNumBefore++;
                 beginningOfAnswer--;
             }
-            printf("the first addend is %s", numBefore);
             //now we do num after
             for (int afterI = i+1; !is_mathematical_symbol(mathBuffer[afterI]); afterI++){
                 numAfter[lenOfNumAfter] = mathBuffer[afterI];
                 lenOfNumAfter++;
                 endOfAnswer++;
             };
-            printf("\nthe second addend is %s\n", numAfter);
             //okay now let's convert both to floats
             float addPartA = atof(numBefore);
             float addPartB = atof(numAfter);
             float result = addPartA + addPartB;
-            printf("\n%f is the result of %f + %f", result, addPartA, addPartB);
             //okay no we convert this result to a char
             char * resultAsString = float_to_char(result);
             char * copyOfResultAsString = resultAsString;
@@ -252,11 +249,14 @@ Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
             //can't free og because that's freeing an advanced pointer
         }
     }
-
+    //okay, presumably it's resolvwd so we are going to TRY to do it
+    float resultMagnitude = atof(mathBuffer);
+    Scalar result = {resultMagnitude};
+    return result;
 }
 
 int main(){
-    char * hello = "1+2";
+    char * hello = "*1+2";
     CompleteAlgebraStatement math = generate_complete_statement(hello);
     printf("%f", resolve_no_variable_algebra_statement(math).magnitude);
 }
