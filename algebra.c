@@ -117,7 +117,7 @@ bool is_mathematical_symbol(char symbol){
 
 
 Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
-    char mathBuffer [64] = {0};
+    char mathBuffer [MAX_EQUATION_SIZE] = {0};
     //make an array of all parts
     uint64_t parts[4] = {
         cas.partA.algebra_chars,
@@ -204,10 +204,42 @@ Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
             char numAfter [32] = {0};
             //first let's gat that reverse thing
             int lenOfNumBefore = 0;
+            int lenOfNumAfter = 0;
+            //let's go from the beginning to the end for each answer
+            // so we know where to fill in
+            int beginningOfAnswer = i-1;
+            int endOfAnswer = i+1;
             for (int beforeI = i-1; !is_mathematical_symbol(mathBuffer[beforeI]); beforeI--){
                 numBefore[lenOfNumBefore] = mathBuffer[beforeI];
                 lenOfNumBefore++;
+                beginningOfAnswer--;
             }
+            //now we do num after
+            for (int afterI = i+1; !is_mathematical_symbol(mathBuffer[afterI]); afterI++){
+                numAfter[lenOfNumAfter] = mathBuffer[afterI];
+                lenOfNumAfter++;
+                endOfAnswer++;
+            };
+            //okay now let's convert both to floats
+            float addPartA = atof(numBefore);
+            float addPartB = atof(numAfter);
+            float result = addPartA + addPartB;
+            //okay no we convert this result to a char
+            char * resultAsString = float_to_char(result);
+            //now we copy the buffer piece by piece, except when we get to the first num part
+            char copyOfMathBuffer[MAX_EQUATION_SIZE] = {0};//nullterm
+            for (int i =0;i<beginningOfAnswer;i++){
+                copyOfMathBuffer[i] = mathBuffer[i];
+            }
+            //okay now we're at the answer fill part, so we're gonna fill this in
+            for (;*resultAsString!=0;resultAsString++){
+                copyOfMathBuffer[i] = *resultAsString;
+            }
+            for (int i = endOfAnswer;mathBuffer[i]!=0;i++){
+                copyOfMathBuffer[i] = mathBuffer[i];
+            }
+            mathBuffer = copyOfMathBuffer;
+            free(resultAsString);//always free!
         }
     }
 
