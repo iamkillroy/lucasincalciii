@@ -194,9 +194,11 @@ Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
     //STEP IDK -- ADDITION
     for (int i = 0; mathBuffer[i]!=0;i++){
         if (mathBuffer[i] == '+'){
+            printf("found math -- ");
             //let's do some quick nonsense checks
             if (i-1==-1){continue;}//aka, adding with a char before the space
             if (mathBuffer[i+1] == 0){continue;} //and make sure the next number does exist
+            printf("it's not weird!\n");
             if (is_mathematical_symbol(mathBuffer[i-1]) || is_mathematical_symbol(mathBuffer[i+1])){continue;}
             //okay so now we're gonna get the number up until it's the next mathematical symbol, and we're gonna reverse it
             // to get the first part in A + B
@@ -214,39 +216,47 @@ Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
                 lenOfNumBefore++;
                 beginningOfAnswer--;
             }
+            printf("the first addend is %s", numBefore);
             //now we do num after
             for (int afterI = i+1; !is_mathematical_symbol(mathBuffer[afterI]); afterI++){
                 numAfter[lenOfNumAfter] = mathBuffer[afterI];
                 lenOfNumAfter++;
                 endOfAnswer++;
             };
+            printf("\nthe second addend is %s\n", numAfter);
             //okay now let's convert both to floats
             float addPartA = atof(numBefore);
             float addPartB = atof(numAfter);
             float result = addPartA + addPartB;
+            printf("\n%f is the result of %f + %f", result, addPartA, addPartB);
             //okay no we convert this result to a char
             char * resultAsString = float_to_char(result);
+            char * copyOfResultAsString = resultAsString;
             //now we copy the buffer piece by piece, except when we get to the first num part
             char copyOfMathBuffer[MAX_EQUATION_SIZE] = {0};//nullterm
-            for (int i =0;i<beginningOfAnswer;i++){
-                copyOfMathBuffer[i] = mathBuffer[i];
+            for (int j =0;j<beginningOfAnswer;j++){
+                copyOfMathBuffer[j] = mathBuffer[i];
             }
             //okay now we're at the answer fill part, so we're gonna fill this in
-            for (;*resultAsString!=0;resultAsString++){
-                copyOfMathBuffer[i] = *resultAsString;
+            for (int k=0;*resultAsString!=0;resultAsString++){
+                copyOfMathBuffer[k] = *resultAsString;
+                k++;
             }
-            for (int i = endOfAnswer;mathBuffer[i]!=0;i++){
-                copyOfMathBuffer[i] = mathBuffer[i];
+            for (int l= endOfAnswer;mathBuffer[l]!=0;l++){
+                copyOfMathBuffer[l] = mathBuffer[l];
             }
-            mathBuffer = copyOfMathBuffer;
-            free(resultAsString);//always free!
+            for (int m =0; m<MAX_EQUATION_SIZE;m++){
+                mathBuffer[m] = copyOfMathBuffer[m];
+            }
+            free(copyOfResultAsString);//always free!
+            //can't free og because that's freeing an advanced pointer
         }
     }
 
 }
 
 int main(){
-    char * hello = "";
+    char * hello = "1+2";
     CompleteAlgebraStatement math = generate_complete_statement(hello);
-    resolve_no_variable_algebra_statement(math);
+    printf("%f", resolve_no_variable_algebra_statement(math).magnitude);
 }
