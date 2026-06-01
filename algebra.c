@@ -209,23 +209,27 @@ Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
             int lenOfNumAfter = 0;
             //let's go from the beginning to the end for each answer
             // so we know where to fill in
-            int beginningOfAnswer = i-1;
-            int endOfAnswer = i+1;
+            int beginningOfAnswer = i;
+            int endOfAnswer = i;
             for (int beforeI = i-1; !is_mathematical_symbol(mathBuffer[beforeI]); beforeI--){
                 numBefore[lenOfNumBefore] = mathBuffer[beforeI];
                 lenOfNumBefore++;
                 beginningOfAnswer--;
+                if (beginningOfAnswer<1){break;}//common sense bound check
             }
+            printf("the first addend is %s", numBefore);
             //now we do num after
             for (int afterI = i+1; !is_mathematical_symbol(mathBuffer[afterI]); afterI++){
                 numAfter[lenOfNumAfter] = mathBuffer[afterI];
                 lenOfNumAfter++;
                 endOfAnswer++;
             };
+            printf("\nthe second addend is %s\n", numAfter);
             //okay now let's convert both to floats
             float addPartA = atof(numBefore);
             float addPartB = atof(numAfter);
             float result = addPartA + addPartB;
+            printf("\n%f is the result of %f + %f", result, addPartA, addPartB);
             //okay no we convert this result to a char
             char * resultAsString = float_to_char(result);
             char * copyOfResultAsString = resultAsString;
@@ -234,17 +238,20 @@ Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
             for (int j =0;j<beginningOfAnswer;j++){
                 copyOfMathBuffer[j] = mathBuffer[i];
             }
+            printf("\n%s copy up until that point (beginning at %d)\n", copyOfMathBuffer, beginningOfAnswer);
             //okay now we're at the answer fill part, so we're gonna fill this in
             for (int k=0;*resultAsString!=0;resultAsString++){
                 copyOfMathBuffer[k] = *resultAsString;
                 k++;
             }
+            printf("going up to end of result\n");
             for (int l= endOfAnswer;mathBuffer[l]!=0;l++){
                 copyOfMathBuffer[l] = mathBuffer[l];
             }
             for (int m =0; m<MAX_EQUATION_SIZE;m++){
                 mathBuffer[m] = copyOfMathBuffer[m];
             }
+            printf("\n------------\nMATHBUFFER : %s\n--------------\n", mathBuffer);
             free(copyOfResultAsString);//always free!
             //can't free og because that's freeing an advanced pointer
         }
@@ -256,7 +263,7 @@ Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
 }
 
 int main(){
-    char * hello = "*1+2";
+    char * hello = "1+2+31+3";
     CompleteAlgebraStatement math = generate_complete_statement(hello);
     printf("%f", resolve_no_variable_algebra_statement(math).magnitude);
 }
