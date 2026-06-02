@@ -308,6 +308,12 @@ Plane make_plane_from_three_points(Vec3 a, Vec3 b, Vec3 c){
     return resultPlane;
 
 }
+CompleteAlgebraStatement make_algebra_statement_of_plane_from_normal_vector_and_point(Vec3 normal, Vec3 point){
+    char statement[MAX_ALGEBRA_STATEMENT_SIZE] = {0};
+    snprintf(statement, sizeof(statement), "%f*(x-%f)+%f(y-%f)+%f(z-%f)=0", normal.x, point.x, normal.y, point.y, normal.z, point.z);
+    CompleteAlgebraStatement result = generate_complete_statement(statement);
+    return result;
+}
 bool check_if_vec3_exists_on_plane(Plane plane, Vec3 vec){
     //check_if_point_exists_on_plane: returns
     // true or false if a vec3 exists at that
@@ -410,128 +416,12 @@ PDot time_push(PDot pdot, Time time){
     return pdot;
 }
 
-char * float_to_char(float a){
-    //float_to_char: given a user passed float, this function converts
-    // the float to a char array WHICH IS MALLOCED TO THE HEAP. IT MUST
-    // BE C A L L E E FREED!!! you've been warned
-    //unlike your malloc mine sucks ass!!!
-    char *buffer = malloc(sizeof(char) * 32);//thank you Miss Delan A of Australiba
-    //stackoverfow post here: https://stackoverflow.com/questions/2988791/converting-float-to-char
-    if (a == (int) a){//aka is it whole
-        //copy it up till we see the period
-        int ret = snprintf(buffer, sizeof(char )* 32, "%d", (int) a);
-    }
-    else{
-        int ret = snprintf(buffer, sizeof(char )* 32, "%f", a);
-    }
-    //malloc our char buffer to the heap
-    return buffer;
-}
-bool has_symbol(char symbol, char * statement){
-    //has_symbol: given a char symbol through each statement,
-    //returns a bool where it is
-    for (;;){
-        if (*statement == symbol){return true;}
-        else if (*statement == 0){return false;}
-        statement++;
-    }
-}
-int where_is_symbol(char symbol, char * statement){
-    //where_is_symbol: given a char symbol and a statement,
-    // returns the FIRST instance of that character
-    // else returns -1 if there is no instance of that character,
-    // but use has_symbol
-    for (int i =0;;i++){
-        if (symbol == 0){return -1;}
-        if (symbol == *statement){return i;}
-        statement++;
-    }
-}
 
-Scalar evaluate_algebra_statement(AlgebraStatement as, MathVariables mv){
-    //evaluate_algebra_statement: given an algebra statement as,
-    // evaluate each characters and return a Scalar in terms of
-    // a float value response from the algebraic statement.
-    // does NOT support radians or imaginary numbers
-    char characters[100];//make our char buffe
-    int endOfStatement = 0;
-    while (as.statement[endOfStatement] != '\0') {//while we're still in the cstring
-        characters[endOfStatement] = as.statement[endOfStatement]; //put the char into the char buffer
-        endOfStatement++;
-    }
-    //now we're going to increment through each operation and evluate it
-    // remember!!!!
-    //  P * parantheses
-    //  E * exponents
-    //  M * multiplication
-    //  D * division
-    //  A * addition
-    //  S * subtrction
-    // so we're gonna have these arrays
-    //so each loop will evaluate in this order
-    // first: parantheses loop
-    bool evaluatingPara = false;
-    uint8_t beginningOfParaStatement = 255;
-    uint8_t endOfParaStatement = 255;
-    for (int i = 0; i<endOfStatement; i++){
-        if (characters[i] == '(') {
-            evaluatingPara = true;
-            beginningOfParaStatement = i; // set the beginnign
-            //now here's the trick: recursively call this function
-            // by making an algebraic statement from ( until ) and
-            // use that resulting scalar in our main statement
-            AlgebraStatement inParaStatement; //this is a parastatement
-            char paraBuffer[50]; //get that char buffer
-            while (!(characters[i] == ')')){
-                paraBuffer[i] = characters[i];
-                i++; //iterate the iteratable var a second time
-                //gross i know!!! but does the job even
-                // if it's a little dirty with it
-            }
-            endOfParaStatement = i; //set the end
-            Scalar paraResult =  evaluate_algebra_statement(inParaStatement, mv);
-            //okay so now we evaluated this and we have a scalar result from our evaluation (presumably)
-            // now we have to snip between beginning and end and get
-            // (3a + 4b + 3^c) + 23k = (19) + 23k
 
-            //this subroutine is complex
-            // so the idea behind it is, given an array A (in our case a char vector, but really could be any array)
-            // we wanna trim the elements so that from range A:B the elements are removed
-            // as tim peters my queen once said:
-            //      "Explicit is better than implicit" --- Tim Peters, The Zen of Python
-            // also i'm not dutch, so i don't know the most obvious way to do this. i'm sure
-            // stdlib has a function that does this but goddamit this is an educational project!!!
-            // anyways back the explanation: basically we're gonna first shift everything down so our
-            // example statement:
-            //      char * e = "(3K + 2) + 1"
-            // turns into:
-            //      char *e = "(_____) + 1"
-            // then we copy this char buffer and clear it
-
-            char newAlgebraStatement[100];
-            //this is our new copy of the statement
-            //now, we finna copy this for every value up till we achieve the i result
-            // o(n) yep i know
-            for (int i =0; i>beginningOfParaStatement; i++){
-                newAlgebraStatement[i] = characters[i];
-                //get the CHARACTER array which returns the character value at that certain point
-            }
-            //okay now we're at the parastatement's result. we're gonna convert the para
-            // scalar value from a float value to become a char array and then throw that in
-            for (int i=0; i<endOfParaStatement; i++){
-                newAlgebraStatement[i] = 0;
-                //now we solve the
-            }
-        }
-    }
-    Scalar duhn;
-    return duhn;
-}
 
 
 int main(){
-    Vec3 firstVec = {3, 5, 4};
-    Vec3 secondVec = {-7,4,4};
-    print_vec3(get_cross_product(firstVec, secondVec));
-
+    Vec3 normalVector = {8, 7, 3};
+    Vec3 point = {3.6666667, 0.666666667, 9};
+    make_algebra_statement_of_plane_from_normal_vector_and_point(normalVector, point);
 }

@@ -90,6 +90,8 @@ CompleteAlgebraStatement generate_complete_statement(char *string) {
     return result;
 }
 
+void dis
+
 bool is_mathematical_symbol(char symbol){
     //is_mathematical_symbol: given a single char symbol, this
     // function returns true if the char is any of these symbols:
@@ -260,4 +262,25 @@ Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
     float resultMagnitude = atof(mathBuffer);
     Scalar result = {resultMagnitude};
     return result;
+}
+
+bool has_symbol(char symbol, char * statement){
+    //has_symbol: given a char symbol through each statement,
+    //returns a bool where it is
+    for (;;){
+        if (*statement == symbol){return true;}
+        else if (*statement == 0){return false;}
+        statement++;
+    }
+}
+int where_is_symbol(char symbol, char * statement){
+    //where_is_symbol: given a char symbol and a statement,
+    // returns the FIRST instance of that character
+    // else returns -1 if there is no instance of that character,
+    // but use has_symbol
+    for (int i =0;;i++){
+        if (symbol == 0){return -1;}
+        if (symbol == *statement){return i;}
+        statement++;
+    }
 }
