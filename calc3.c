@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+
+#include "algebra.c"
 //some useful structs
 #define MAX_ALGEBRA_STATEMENT_SIZE 1024
 //basic components of a 3d Vec3tor
@@ -47,10 +49,6 @@ struct matrix3{
     float g;
     float h;
     float i;
-};
-//scalar, just so i have pretty types :)
-struct scalar {
-    float magnitude;
 };
 
 typedef struct vector_struct Vec3;
@@ -205,6 +203,10 @@ Scalar get_magnitude(Vec3 vec) {
     return result;
 
 }
+
+void print_vec3(Vec3 vector){
+    printf("{%f, %f, %f}", vector.x, vector.y, vector.z);
+}
 Vec3 get_cross_product(Vec3 a, Vec3 b){
     //get cross product: with two vectors
     // a and b, this function returns the
@@ -247,8 +249,10 @@ Scalar calculate_vector_triangle(Vec3 a, Vec3 b, Vec3 c){
     Vec3 AC = get_vector_displacement(a, c);
     //STEP 2, get the cross product of them
     Vec3 ABcrossAC = get_cross_product(AB, AC);
+    print_vec3(ABcrossAC);
     //STEP 3, get the magnitude of the resulting cross product vector
     Scalar areaResult;
+    printf("\n%f\n", (get_magnitude(ABcrossAC).magnitude));
     //ugly fugly freaking ugly code
     // casting into scalars was a greaaatttt ideaaa
     areaResult.magnitude = 0.5 * (get_magnitude(ABcrossAC).magnitude);
@@ -282,6 +286,7 @@ Scalar calculate_vector_parallelogram(Vec3 a, Vec3 b, Vec3 c){
     // all good
     return areaResult;
 }
+
 
 
 //make a plane from two pints
@@ -330,6 +335,8 @@ bool check_if_vec3_exists_on_plane(Plane plane, Vec3 vec){
     if (result == 0) return true;
     else return false;
 }
+
+
 
 Scalar get_dot_product(Vec3 a, Vec3 b){
     // get_dot_product: given two vectors, a and b
@@ -520,303 +527,11 @@ Scalar evaluate_algebra_statement(AlgebraStatement as, MathVariables mv){
     Scalar duhn;
     return duhn;
 }
-bool is_mathematical_symbol(char symbol){
-    //is_mathematical_symbol: given a single char symbol, this
-    // function returns true if the char is any of these symbols:
-    //      +  -  *  /  ^  =
-    // and false otherwise
-    switch(symbol){
-        case '+':
-            return true;
-        case '-':
-            return true;
-        case '*':
-            return true;
-        case '/':
-            return true;
-        case '^':
-            return true;
-        case '=':
-            return true;
-        case ' ':
-            return true;
-    }
-    return false;
-}
-
-char * __rec_get_mult_algebra_statement(AlgebraStatement as, int8_t locationOfExponent){
-    //this is recycled!!! it's the same as the other functions!! the og was the exponent
-    char * equationBuffer = as.statement;
-    //so for each position we find this in, we're gonna look to our left, because that's where
-    // the exponent is, and we're gonna keep looking until we get to the next symbol, which means that
-    // we know that this is the end, or if the position we're iterating at becomes zero, which really means
-    // this is the end
-    char multiplier[MAX_ALGEBRA_STATEMENT_SIZE/2/2] = {0};
-    char multiplex[MAX_ALGEBRA_STATEMENT_SIZE/2/2] = {0};
-    int8_t beginningOfExponentialStatementInAS;
-    int8_t endOfExponentialStatementInAS;
-    int8_t backtracker = locationOfExponent;//int so we can wrap around
-    printf("backtracer is %d\n", backtracker);
-
-    uint8_t backtrackIndex = 0;
-    //aka while we haven't reached the end and while the symbol that we're currently backtracking
-    // into is not a mathematical symbol
-    // FIRST let's get the exponent base
-    backtracker = backtracker -1;
-    int8_t multiplierIterator = 0;//confusing name this is so we can concat the
-    //exponent base for each char
-    while ((backtracker >= 0) && !(is_mathematical_symbol(equationBuffer[backtracker]))){
-        beginningOfExponentialStatementInAS = backtracker;
-        //get character here
-        multiplex[multiplierIterator] = equationBuffer[backtracker];
-        backtracker--;
-        multiplierIterator++;
-    }
-    //okay now we have the exponent base let's get the exponent power
-    int8_t multiplexIterator = 0;
-    int8_t foretracker = locationOfExponent + 1; //reset it to new position
-    //same gist as before but for the next stuff
-    while ((foretracker >= 0 ) && !(is_mathematical_symbol(equationBuffer[foretracker]))){
-        endOfExponentialStatementInAS = foretracker;
-        multiplex[multiplexIterator] = equationBuffer[foretracker];
-        foretracker++;
-        multiplexIterator++;
-    }//context btw space is  a math symbol so that's why it stops after spacing
-    //okay now the funner easier part
-    int8_t multiplierInt = atoi(multiplier);
-    int8_t multiplexInt = atoi(multiplex);
-    double expresult = multiplierInt *  multiplexInt;//casting from int8_t to double
-    printf("EXP RESULT %f", expresult);
-    //okay now we gotta convert the result to a char and put it back in
-    char * newExponentString = float_to_char((float) expresult); //cast result to float and then put it out as a char
-    //okay so now we gotta put that back into the current equation buffer
-    //so let's rebuild it, bit by bit
-    //okay so i finna wanna make this a function BUT that would mean passing references from the call stack that
-    // i would have to malloc over and i aint about that
-    char newEquationBuffer[MAX_ALGEBRA_STATEMENT_SIZE] = {0};
-    //okay so basically let's just iterate until we go to the start of where we replace
-    for (int i= 0;i<beginningOfExponentialStatementInAS;i++){newEquationBuffer[i] = equationBuffer[i];}
-    printf("\nNew equation at i is (%s)\n", newEquationBuffer);
-
-    //okay we've reassigned up to the new equationbuffer's before point now
-    newEquationBuffer[beginningOfExponentialStatementInAS] = ' ';//just for some nice spaces :)
-    //okay now we reassign up till the null terminate here on the string
-    int lenOfExponentialStatement = 0;//counting this seperately because strlen is evil
-    for(int j = beginningOfExponentialStatementInAS+1; j<endOfExponentialStatementInAS; j++){
-        if (!(*newExponentString==0)){
-            printf("\n%c\n", *newExponentString);
-            newEquationBuffer[j] = *newExponentString;
-            newExponentString++;
-            lenOfExponentialStatement++;
-        }
-        else{
-            break;
-        }
-    }
-    endOfExponentialStatementInAS++;
-    //okay booooom null terminated exponent value copied
-    // now we gotta go and format everything else together
-    // this last part is held together with glue and hope
-    for(int i = 0; i+endOfExponentialStatementInAS<MAX_ALGEBRA_STATEMENT_SIZE; i++){
-    //we're gonna keep going until we get either to the end of the char OR we get null terminated
-    newEquationBuffer[beginningOfExponentialStatementInAS+lenOfExponentialStatement+i+1] = equationBuffer[endOfExponentialStatementInAS+i];
-    if (equationBuffer[endOfExponentialStatementInAS+i] == 0){break;}
-}
-    printf("Final :%s\n", newEquationBuffer);
-    //dear c. i love you but,
-    // why can't we return arrays?
-    // gonna have to malloc this
-    char * malloced_return_statement = malloc(sizeof((newEquationBuffer)));
-    memcpy(malloced_return_statement, newEquationBuffer, sizeof(newEquationBuffer));
-    return malloced_return_statement;
-}
-
-char * __rec_get_exp_algebra_statement(AlgebraStatement as, int8_t locationOfExponent){
-    char * equationBuffer = as.statement;
-    //so for each position we find this in, we're gonna look to our left, because that's where
-    // the exponent is, and we're gonna keep looking until we get to the next symbol, which means that
-    // we know that this is the end, or if the position we're iterating at becomes zero, which really means
-    // this is the end
-    char exponentBase[MAX_ALGEBRA_STATEMENT_SIZE/2/2] = {0};
-    char exponentPower[MAX_ALGEBRA_STATEMENT_SIZE/2/2] = {0};
-    int8_t beginningOfExponentialStatementInAS;
-    int8_t endOfExponentialStatementInAS;
-    int8_t backtracker = locationOfExponent;//int so we can wrap around
-
-    uint8_t backtrackIndex = 0;
-    //aka while we haven't reached the end and while the symbol that we're currently backtracking
-    // into is not a mathematical symbol
-    // FIRST let's get the exponent base
-    backtracker = backtracker -1;
-    int8_t exponentBaseIterator = 0;//confusing name this is so we can concat the
-    //exponent base for each char
-    while ((backtracker >= 0) && !(is_mathematical_symbol(equationBuffer[backtracker]))){
-        beginningOfExponentialStatementInAS = backtracker;
-        //get character here
-        exponentBase[exponentBaseIterator] = equationBuffer[backtracker];
-        backtracker--;
-        exponentBaseIterator++;
-    }
-    //okay now we have the exponent base let's get the exponent power
-    int8_t exponentPowerIterator = 0;
-    int8_t foretracker = locationOfExponent + 1; //reset it to new position
-    //same gist as before but for the next stuff
-    while ((foretracker >= 0 ) && !(is_mathematical_symbol(equationBuffer[foretracker]))){
-        endOfExponentialStatementInAS = foretracker;
-        exponentPower[exponentPowerIterator] = equationBuffer[foretracker];
-        foretracker++;
-        exponentPowerIterator++;
-    }//context btw space is  a math symbol so that's why it stops after spacing
-    //okay now the funner easier part
-    int8_t expBase = atoi(exponentBase);
-    int8_t expPower = atoi(exponentPower);
-    double expresult = pow(expBase, expPower);//casting from int8_t to double
-    //okay now we gotta convert the result to a char and put it back in
-    char * newExponentString = float_to_char((float) expresult); //cast result to float and then put it out as a char
-    //okay so now we gotta put that back into the current equation buffer
-    //so let's rebuild it, bit by bit
-    //okay so i finna wanna make this a function BUT that would mean passing references from the call stack that
-    // i would have to malloc over and i aint about that
-    char newEquationBuffer[MAX_ALGEBRA_STATEMENT_SIZE] = {0};
-    //okay so basically let's just iterate until we go to the start of where we replace
-    for (int i= 0;i<beginningOfExponentialStatementInAS;i++){newEquationBuffer[i] = equationBuffer[i];}
-
-    //okay we've reassigned up to the new equationbuffer's before point now
-    newEquationBuffer[beginningOfExponentialStatementInAS] = ' ';//just for some nice spaces :)
-    //okay now we reassign up till the null terminate here on the string
-    int lenOfExponentialStatement = 0;//counting this seperately because strlen is evil
-    for(int j = beginningOfExponentialStatementInAS+1; j<endOfExponentialStatementInAS; j++){
-        if (!(*newExponentString==0)){
-            newEquationBuffer[j] = *newExponentString;
-            newExponentString++;
-            lenOfExponentialStatement++;
-        }
-        else{
-            break;
-        }
-    }
-    endOfExponentialStatementInAS++;
-    //okay booooom null terminated exponent value copied
-    // now we gotta go and format everything else together
-    // this last part is held together with glue and hope
-    for(int i = 0; i+endOfExponentialStatementInAS<MAX_ALGEBRA_STATEMENT_SIZE; i++){
-    //we're gonna keep going until we get either to the end of the char OR we get null terminated
-    newEquationBuffer[beginningOfExponentialStatementInAS+lenOfExponentialStatement+i+1] = equationBuffer[endOfExponentialStatementInAS+i];
-    if (equationBuffer[endOfExponentialStatementInAS+i] == 0){break;}
-}
-    //dear c. i love you but,
-    // why can't we return arrays?
-    // gonna have to malloc this
-    char * malloced_return_statement = malloc(sizeof((newEquationBuffer)));
-    memcpy(malloced_return_statement, newEquationBuffer, sizeof(newEquationBuffer));
-    return malloced_return_statement;
-}
-
-
-
-Scalar evaluate_simple_algebra_statement(AlgebraStatement as){
-    //evaluate_simple_algebra_statement: given an algebra statement as,
-    // we're gonna evaluate the characters so that we get a scalar value, doing all orders
-    // the "simple " part of the statement requires no unknown constants and
-    // no parantheses. exponents are okay. speaking of which
-    //
-    // ALGEBRA STATEMENT GUIDANCE: in order to make a valid algebra statement: one must
-    //          * use NO spaces between each expression and algebraic symbol
-    //              Ex: 3+5  --> 8
-    //          * use NO constants in a simple algebraic statement
-    int8_t expLocations[MAX_ALGEBRA_STATEMENT_SIZE/2] = {-1};
-    uint8_t expCounter = 0;
-    int8_t multLocations[MAX_ALGEBRA_STATEMENT_SIZE/2] = {-1};
-    uint8_t multCounter = 0;
-    int8_t divLocations[MAX_ALGEBRA_STATEMENT_SIZE/2] = {-1};
-    uint8_t divCounter = 0;
-    int8_t addLocations[MAX_ALGEBRA_STATEMENT_SIZE/2] = {-1};
-    uint8_t addCounter = 0;
-    int8_t subLocations[MAX_ALGEBRA_STATEMENT_SIZE/2] = {-1};
-    uint8_t subCounter = 0;
-    char equationBuffer[MAX_ALGEBRA_STATEMENT_SIZE] = {0};//null terminated buffer
-    char *copyOfASPointer = as.statement; //copy the pointer
-    int i = 0;
-    //now we can increment through it
-    AlgebraStatement currentWorkingStatement = {equationBuffer};
-    //let's clean all white space fron the statement
-
-    char copiedBuffer[MAX_ALGEBRA_STATEMENT_SIZE];
-    //put all non space chars into a seperate directory
-
-    for (int typeOfAlgebra = 0; typeOfAlgebra<5; typeOfAlgebra++){
-        printf("\n\n\nITERATION %d\n", typeOfAlgebra);
-        //now let's slip it in ( ͡° ͜ʖ ͡°)
-        for (;*copyOfASPointer!=0;){
-                if (*copyOfASPointer!=' '){
-                    //remove white space
-                    equationBuffer[i] = *copyOfASPointer;
-                }
-                else {
-                    printf("removed new whitespace");
-                }
-                switch (*copyOfASPointer){
-                    case 0x5E: //AKA ^ or pow
-                        expCounter++;
-                        break;
-                    case 0x2A://AKA * multiply
-                        multCounter++;
-                        break;
-                    case 0x2F: //AKA / divide
-                        divCounter++;
-                        break;
-                    case 0x2B: //AKA add
-                        addCounter++;
-                        break;
-                    case 0x2D: //AKA suvtract -
-                        subCounter++;
-                        break;
-
-                }
-                copyOfASPointer++;//increment the pointer by one
-                i++;
-            }
-        printf("Exponential %d Multiply %d Divide %d Add %d Subtract %d\n", expCounter, multCounter, divCounter, addCounter, subCounter);
-        //now, we should have a count of every single algebraic symbol within the equation
-        //now we need to evaluate each of the terms
-        //first, exponents
-        //first exponents
-        switch (typeOfAlgebra) {
-            case 0:
-                for (int i=0;i<=expCounter;i++){
-                    if (has_symbol('^', currentWorkingStatement.statement)){
-                        int whereSymbolIs = where_is_symbol('^', currentWorkingStatement.statement);
-                        char * currentWorkingCharStatement = __rec_get_exp_algebra_statement(currentWorkingStatement, whereSymbolIs);
-                        currentWorkingStatement.statement = currentWorkingCharStatement;
-                    }
-                }
-                printf("\n%s\n", currentWorkingStatement.statement);
-                break;
-            case 1:
-                //second multipliers
-                for (int i=0;i<=multCounter;i++){
-                    if (has_symbol('*', currentWorkingStatement.statement)){
-                        int whereSymbolIs = where_is_symbol('*', currentWorkingStatement.statement);
-                        char * currentWorkingCharStatement = __rec_get_mult_algebra_statement(currentWorkingStatement, whereSymbolIs);
-                        currentWorkingStatement.statement = currentWorkingCharStatement;
-                    }
-                }
-                printf("\n%s\n", currentWorkingStatement.statement);
-                break;
-        }
-
-
-        printf("Finished iteration %d\n", typeOfAlgebra);
-
-
-    }
-}
-
 
 
 int main(){
-    AlgebraStatement myAlgebraStatement;
-    myAlgebraStatement.statement = "3^2 * 2^3";
-    MathVariables mv;
-    evaluate_simple_algebra_statement(myAlgebraStatement);
+    Vec3 firstVec = {3, 5, 4};
+    Vec3 secondVec = {-7,4,4};
+    print_vec3(get_cross_product(firstVec, secondVec));
+
 }

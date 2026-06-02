@@ -261,9 +261,3 @@ Scalar resolve_no_variable_algebra_statement(CompleteAlgebraStatement cas){
     Scalar result = {resultMagnitude};
     return result;
 }
-
-int main(){
-    char * hello = "1+2+31+3";
-    CompleteAlgebraStatement math = generate_complete_statement(hello);
-    printf("%f", resolve_no_variable_algebra_statement(math).magnitude);
-}
